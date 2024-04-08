@@ -172,7 +172,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
   }
   ```
 ### Example #2: "Authorization: Basic" input
-1) Open the Service (created above)
+1) Open the `httpbin` Service
 2) Create a new Route:
 - name=`basicAuth`
 - path=`/basicAuth`
@@ -216,7 +216,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 - Copy/paste the content of `./mTLS/ca.cert.pem` in the CA field
 - Click on Create
 2) Open the CA Certificate just created and copy/paste its `ID`
-3) Open the Service (created above)
+3) Open the `httpbin` Service
 4) Create a new a Route:
 - name=`mtlsAuth`
 - path=`/mtlsAuth`
@@ -259,7 +259,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
     }
     ```
 ### Example #4: "Key Authentication" input
-1) Open the Service (created above)
+1) Open the `httpbin` Service
 2) Create a new a Route:
 - name=`apiKey`
 - path=`/apiKey`
