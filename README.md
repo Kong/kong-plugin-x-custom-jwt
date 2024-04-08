@@ -11,7 +11,7 @@ The plugin `x-custom-jwt` doesn't check the validity of the input itself (neithe
 - [Mutual TLS Authentication](https://docs.konghq.com/hub/kong-inc/mtls-auth/)
 - [Key Authentication](https://docs.konghq.com/hub/kong-inc/key-auth/)
 
-## High level algorithm to craft `x-custom-jwt`
+## High level algorithm to craft and sign the `x-custom-jwt`
 ```lua
 -- Try to find one by one an Authentication given by the Consumer
 find "Authorization: Bearer" header
