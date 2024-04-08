@@ -323,12 +323,11 @@ http --verify=no --cert=./mTLS/1337.pem --cert-key=./mTLS/client.key https://loc
 http :8000/apiKey apikey:'012345AZERTY!'
 ```
 - `Response`: expected value of `x-custom-jwt` plugin:
-  - Base64 encoded:
-  - JSON decoded:
+  * JSON decoded:
 ```
 eyJraWQiOiJrb25nIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYiLCJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIn0.eyJhY3QiOnsiY2xpZW50X2lkIjoibXktYXV0aC11c2VybmFtZS1JRCJ9LCJqdGkiOiI4MTg1ZjEyYi0wOTZlLTQzOWYtYWVlZC00ZGQxNjlkZDNlYWQiLCJpc3MiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dCIsImF1ZCI6Imh0dHA6Ly9odHRwYmluLmFwaW0uZXUvYW55dGhpbmciLCJpYXQiOjE3MTI1ODU2MTUsImV4cCI6MTcxMjU4NzQxNSwiY2xpZW50X2lkIjoiMDEyMzQ1QVpFUlRZISJ9.VZpSWJGQwPadGR-U_fXKbIvLHo6j6KuvTBG6UONpeq-c4sJpDZtELVfD27arD8iMaz7ncGpkdAnhBsl-e4i_N_lEyu0srYp0kOVHKFcCf8qIJYWFQSk0NQ5YLc59-AZ51RooZlCLcBv5LGeABHLKg49geolOVSwWTg0dN6tqVn1W1SpiDt63KCrZsdTV-YhYtHBjAnBYywRcFIsZoKaOt67JI0VO6o9hFzrPE8Tsr1kx6cePQFL44CEnbkRG1bny46PJQ4a_kMrT-i1v3UIum0EYtyfrFygrpdqA6AlNbjd7wfmc-p7zYKX-Mg84PCNYw34EoMrWk-jEt7cLUyPo3w
 ```
-  - JSON decoded:
+  * JSON decoded:
 ```json
 {
   "header": {
