@@ -129,6 +129,10 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
   - config.jku=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt/jwks)
   - config.private_jwk=copy/paste the content of `./test-keys/jwk-private.json` **Or**
   - config.private_jwk=paste the `Public and Private Keypair` from https://mkjwk.org/. If needed, adapt the `kid` to a custom value; the `kid` value must be the same as defined in `Prerequisites` heading (see the configuration of `Request Termination` plugin)
+6) Create a Consumer with:
+- username=`contact@konghq.com`
+- Custom ID=`contact@konghq.com-ID1`
+
 
 ### Example #1: "Authorization: Bearer" input
 0) Let's use the `httpbin` route 
@@ -173,14 +177,11 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 - name=`basicAuth`
 - path=`/basicAuth`
 3) Add `Basic Authentication` plugin to the Route (Leave default parameters)
-4) Create a consumer with:
-- username=`my-auth-username`
-- Custom ID=`my-auth-username-ID`
-5) Open the consumer, go on credentials, click on a `+ New Basic Auth Credential` and put:
+4) Open the `contact@konghq.com` consumer, go on credentials, click on a `+ New Basic Auth Credential` and put:
 - username=`my-auth`
 - password=`My p@ssword!`
-6) Click on save
-7) Test
+5) Click on save
+6) Test
 - `Request`:
 
   ```shell
@@ -217,44 +218,46 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 2) Open the CA Certificate just created and copy/paste its `ID`
 3) Open the Service (created above)
 4) Create a new a Route:
-- name=`mtls-auth`
-- path=`/mtls-auth`
+- name=`mtlsAuth`
+- path=`/mtlsAuth`
 5) Add `Mutual TLS Authentication` plugin to the Route and add to config.ca_certificates the `ÌD` of the CA cert
 6) Click on Install
-7) Create a consumer (linked with the client certificate) with:
-- Username = `demo@apim.eu`
-- Custom ID = `demo@apim.eu`
+7) Check the presence of `contact@konghq.com` consumer (linked with the client certificate)
 8) Click on create
 9) Test
 - `Request`:
 
   ```shell
-  http --verify=no --cert=./mTLS/1337.pem --cert-key=./mTLS/client.key https://localhost:8443/mtls-auth
+  http --verify=no --cert=./mTLS/01.pem --cert-key=./mTLS/client.key https://localhost:8443/mtlsAuth
   ```
 - `Response`: expected value of `x-custom-jwt` plugin:
-
-  ```json
-  {
-    "header": {
-      "typ": "JWT",
-      "alg": "RS256",
-      "kid": "kong",
-      "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
-    },
-    "payload": {
-      "act": {
-        "client_id": "demo@apim.eu"
+    * Base64 encoded:
+    ```
+    eyJraWQiOiJrb25nIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYiLCJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIn0.eyJhY3QiOnsiY2xpZW50X2lkIjoiY29udGFjdEBrb25naHEuY29tLUlEMSJ9LCJqdGkiOiI4OTBkNWFiMy1mOTViLTQ0OWMtODFiYS04ZWJlNjA3NDhlNGYiLCJpc3MiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dCIsImF1ZCI6Imh0dHA6Ly9odHRwYmluLmFwaW0uZXUvYW55dGhpbmciLCJpYXQiOjE3MTI1OTYyMTEsImV4cCI6MTcxMjU5ODAxMSwiY2xpZW50X2lkIjoiQz1VUywgU1Q9Q2FsaWZvcm5pYSwgTz1Lb25nIEluYy4sIE9VPUtvbm5lY3QsIENOPWtvbmcsIGVtYWlsQWRkcmVzcz1jb250YWN0QGtvbmdocS5jb20ifQ.hdvVaMro_dnaeEaraPCGDmVtqF-Ju8HautMLIgezXPzM6lYEfuN44ZFOO4-pAKBy6i7zcuI6HXnuOqHjwcK8pcggi9yic7XL2AJxwDXyyXlt6DDgixul4fFZnNQ2AQRZCTEfNSbVBk3MFNZHbv4bhwOmEn8GCt9xjK-fEQ6bcTIcphJ7xm-jnRQQd7IqJxoMj4nkM_HyN30zt0N3ynVNWcEZPl1v64PyWqAr6Fw6izL7sN0y4dSmeyufs36AYA0e6JznmR5CnnQrWyb1arwvuNx2t89BwMFEzThWk8SfvmY4r5fy1KyOou9p39V3UdMBNz6oGiLqd7wdYVEU2OH74g
+    ```
+    * JSON decoded:
+    ```json
+    {
+      "header": {
+        "typ": "JWT",
+        "alg": "RS256",
+        "kid": "kong",
+        "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
       },
-      "jti": "ded4a84c-5f5e-48a5-b7b3-42613df0e236",
-      "exp": 1689445843,
-      "iss": "http://localhost:8000/x-custom-jwt/v2",
-      "aud": "http://httpbin.apim.eu/anything",
-      "client_id": "C=WD, ST=Earth, O=Kong Inc., OU=Solution Engineering, CN=apim.eu, emailAddress=demo@apim.eu",
-      "iat": 1689444043
+      "payload": {
+        "act": {
+          "client_id": "contact@konghq.com-ID1"
+        },
+        "jti": "890d5ab3-f95b-449c-81ba-8ebe60748e4f",
+        "iss": "https://kong-gateway:8443/x-custom-jwt",
+        "aud": "http://httpbin.apim.eu/anything",
+        "iat": 1712596211,
+        "exp": 1712598011,
+        "client_id": "C=US, ST=California, O=Kong Inc., OU=Konnect, CN=kong, emailAddress=contact@konghq.com"
       },
-    "signature": "xxxxx"
-  }
-  ```
+      "signature": "xxxxx"
+    }
+    ```
 ### Example #4: "Key Authentication" input
 1) Open the Service (created above)
 2) Create a new a Route:
@@ -262,7 +265,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 - path=`/apiKey`
 3) Add `Key Auth` plugin to the Route with:
 - config.key_names=`apikey`
-4) Open the consumer `my-auth-username`, click on Credentials / Key Authentication and click on `+ New Key Auth Credential`, put:
+4) Open the `contact@konghq.com` consumer, click on Credentials / Key Authentication and click on `+ New Key Auth Credential`, put:
 - Key=`012345AZERTY!`
 5) Click on `Create`
 6) Test
@@ -274,33 +277,32 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 - `Response`: expected value of `x-custom-jwt` plugin:
 
     * Base64 encoded:
-  ```
-  eyJraWQiOiJrb25nIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYiLCJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIn0.eyJhY3QiOnsiY2xpZW50X2lkIjoibXktYXV0aC11c2VybmFtZS1JRCJ9LCJqdGkiOiI4MTg1ZjEyYi0wOTZlLTQzOWYtYWVlZC00ZGQxNjlkZDNlYWQiLCJpc3MiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dCIsImF1ZCI6Imh0dHA6Ly9odHRwYmluLmFwaW0uZXUvYW55dGhpbmciLCJpYXQiOjE3MTI1ODU2MTUsImV4cCI6MTcxMjU4NzQxNSwiY2xpZW50X2lkIjoiMDEyMzQ1QVpFUlRZISJ9.VZpSWJGQwPadGR-U_fXKbIvLHo6j6KuvTBG6UONpeq-c4sJpDZtELVfD27arD8iMaz7ncGpkdAnhBsl-e4i_N_lEyu0srYp0kOVHKFcCf8qIJYWFQSk0NQ5YLc59-AZ51RooZlCLcBv5LGeABHLKg49geolOVSwWTg0dN6tqVn1W1SpiDt63KCrZsdTV-YhYtHBjAnBYywRcFIsZoKaOt67JI0VO6o9hFzrPE8Tsr1kx6cePQFL44CEnbkRG1bny46PJQ4a_kMrT-i1v3UIum0EYtyfrFygrpdqA6AlNbjd7wfmc-p7zYKX-Mg84PCNYw34EoMrWk-jEt7cLUyPo3w
-  ```
-  * JSON decoded:
-  ```json
-  {
-    "header": {
-      "typ": "JWT",
-      "alg": "RS256",
-      "kid": "kong",
-      "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
-    },
-    "payload": {
+    ```
+    eyJraWQiOiJrb25nIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYiLCJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIn0.eyJhY3QiOnsiY2xpZW50X2lkIjoiY29udGFjdEBrb25naHEuY29tLUlEMSJ9LCJqdGkiOiJkNzMxNWU5YS1hYjJjLTRlOGMtYWRhOS0zYjEyYzNiNGYzZTQiLCJpc3MiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dCIsImF1ZCI6Imh0dHA6Ly9odHRwYmluLmFwaW0uZXUvYW55dGhpbmciLCJpYXQiOjE3MTI1OTY0OTMsImV4cCI6MTcxMjU5ODI5MywiY2xpZW50X2lkIjoiMDEyMzQ1QVpFUlRZISJ9.GxM-20uKCkkN06IVSLAyR97QsR2mpMXnaIZzvyuD_cQo5ETIw6Axkb0X8rmNtPONa27okdPB_xVV8XOHC2QSeF4p8h7LZzgZKUg1_7Ixjw4A0Xs5CrRk58aSxFP1EjBGGR7jL896sqtTjz2coJZ7q0ZTqcTG0VDvMCoxmVYa4G5XDm-zOABkFf-Cp4oWxMkFxF3b6m22rjQeI25_5NxJaNAJM6VFVBcmXF9wJTDiOie11eKScuYNRgoICp_XDgPpqLWET4DIPYYWCw_ZFG9vlckXBteTVdEZxvxLVvVtxcrANeDRN3RR0XcSByh5pOIa-2rsa7cUGEyGDVeS4pwIIQ
+    ```
+    * JSON decoded:
+    ```json
     {
-      "act": {
-        "client_id": "my-auth-username-ID"
+      "header": {
+        "typ": "JWT",
+        "alg": "RS256",
+        "kid": "kong",
+        "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
       },
-      "jti": "8185f12b-096e-439f-aeed-4dd169dd3ead",
-      "iss": "https://kong-gateway:8443/x-custom-jwt",
-      "aud": "http://httpbin.apim.eu/anything",
-      "iat": 1712585615,
-      "exp": 1712587415,
-      "client_id": "012345AZERTY!"
-    },
-    "signature": "xxxxx"
-  }
-  ```
+      "payload": {
+        "act": {
+          "client_id": "contact@konghq.com-ID1"
+        },
+        "jti": "d7315e9a-ab2c-4e8c-ada9-3b12c3b4f3e4",
+        "iss": "https://kong-gateway:8443/x-custom-jwt",
+        "aud": "http://httpbin.apim.eu/anything",
+        "iat": 1712596493,
+        "exp": 1712598293,
+        "client_id": "012345AZERTY!"
+      },
+      "signature": "xxxxx"
+    }
+    ```
 
 ## Check the JWS with https://jwt.io
 1) Open https://jwt.io
