@@ -7,9 +7,9 @@
 The plugin `x-custom-jwt` doesn't check the validity of the input itself (neither checking of JWT signature & JWT expiration, nor user/password checking, nor checking Client TLS checking, nor api key checking). So it's **mandatory to use this plugin in conjunction with Kong security plugins**:
 - [OIDC](https://docs.konghq.com/hub/kong-inc/openid-connect/)
 - [JWT validation](https://docs.konghq.com/hub/kong-inc/jwt/)
-- [Basic authorization](https://docs.konghq.com/hub/kong-inc/basic-auth/)
-- [mTLS](https://docs.konghq.com/hub/kong-inc/mtls-auth/)
-- [Key Authentication - Encrypted](https://docs.konghq.com/hub/kong-inc/key-auth/)
+- [Basic Authentication](https://docs.konghq.com/hub/kong-inc/basic-auth/)
+- [Mutual TLS Authentication](https://docs.konghq.com/hub/kong-inc/mtls-auth/)
+- [Key Authentication](https://docs.konghq.com/hub/kong-inc/key-auth/)
 
 ## High level algorithm to craft `x-custom-jwt`
 ```lua
@@ -130,7 +130,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
   - config.private_jwk=copy/paste the content of `./test-keys/jwk-private.json` **Or**
   - config.private_jwk=paste the `Public and Private Keypair` from https://mkjwk.org/. If needed, adapt the `kid` to a custom value; the `kid` value must be the same as defined in `Prerequisites` heading (see the configuration of `Request Termination` plugin)
 6) Create a Consumer with:
-- username=`contact@konghq.com`
+- Username=`contact@konghq.com`
 - Custom ID=`contact@konghq.com-ID1`
 
 
