@@ -180,9 +180,10 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 6) Click on save
 7) Test
 - `Request`:
-```shell
-http -a 'my-auth:My p@ssword!' :8000/basicAuth
-```
+
+  ```shell
+  http -a 'my-auth:My p@ssword!' :8000/basicAuth
+  ```
 - `Response`: expected value of `x-custom-jwt` plugin:
   ```json
   {
