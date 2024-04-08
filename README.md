@@ -102,15 +102,15 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
   - `config.content_type`=`application/json`
   - `config.body`=copy/paste the content of `./test-keys/jwks-public.json` **Or**
   - `Config.Body`=**The `Public JWK Key` must be pasted from https://mkjwk.org/ and add `"keys": [` property for having a JWKS** If needed, adapt the `kid` to a custom value. JWKS Structure:
-  ```json
-  {
-    "keys": [
-      {
-        *****  CHANGE ME WITH THE PUBLIC JWKS *****
-      }
-    ]
-  }
-  ```
+    ```json
+    {
+      "keys": [
+        {
+          *****  CHANGE ME WITH THE PUBLIC JWKS *****
+        }
+      ]
+    }
+    ```
   - Click on `Save`
 - Add the `CORS` plugin to the Route with:
   - config.origins=`*`
@@ -130,100 +130,42 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
   - config.private_jwk=copy/paste the content of `./test-keys/jwk-private.json` **Or**
   - config.private_jwk=paste the `Public and Private Keypair` from https://mkjwk.org/. If needed, adapt the `kid` to a custom value; the `kid` value must be the same as defined in `Prerequisites` heading (see the configuration of `Request Termination` plugin)
 
-### "Authorization: Bearer"
+### Example #1: "Authorization: Bearer" input
 0) Let's use the `httpbin` route 
 1) Test `Sample #1`
 - `Request #1`:
-```shell
-AT1=`cat ./sample-x-custom-jwt/1_input-access-token.txt` && http :8000/httpbin Authorization:' Bearer '$AT1
-```
+  ```shell
+  AT1=`cat ./sample-x-custom-jwt/1_input-access-token.txt` && http :8000/httpbin Authorization:' Bearer '$AT1
+  ```
 - `Response #1`: expected value of `x-custom-jwt` plugin:
-```json
-{
-  "header": {
-    "kid":"kong",
-    "jku": "http://localhost:8000/x-custom-jwt/jwks",
-    "typ": "JWT",
-    "alg": "RS256"
-  },
-  "payload": {
-    "client_id": "ma9oycqlep",
-    "act": {
-      "client_id": "oauth-custom_id"
+  ```json
+  {
+    "header": {
+      "kid":"kong",
+      "jku": "http://localhost:8000/x-custom-jwt/jwks",
+      "typ": "JWT",
+      "alg": "RS256"
     },
-    "aud": "http://httpbin.apim.eu/anything",
-    "part_nr_ansp_person": "39444822",
-    "iat": 1689239122,
-    "pi.sri": "reaIoODhdakJoNacp3N0yQQU3Gw..rOmI",
-    "sub": "L000001",
-    "part_nr_org": "28021937",
-    "exp": 1689240922,
-    "scope": "openid profile email",
-    "iss": "https://kong-gateway:8443/x-custom-jwt/v2",
-    "jti": "ca2a1f74-1041-437d-b908-29743e3381f0"
-  },
-  "signature": "xxxxx"
-}
-```
-2) Test `Sample #2`
-- `Request #2`:
-```shell
-AT2=`cat ./sample-x-custom-jwt/2_input-access-token.txt` && http :8000/httpbin Authorization:' Bearer '$AT2
-```
-- `Response #2`: expected value of `x-custom-jwt` plugin:
-```json
-{
-  "header": {
-    "kid":"kong",
-    "jku": "http://localhost:8000/x-custom-jwt/jwks",
-    "typ": "JWT",
-    "alg": "RS256"
-  },
-  "payload": {
-    "iat": 1689441329,
-    "sub": "c0e6ab4b",
-    "exp": 1689443129,
-    "client_id": "c0e6ab4b",
-    "rlm": "client",
-    "scope": "axa-ch_openapi_travel-insurance_read axa-ch_openapi_travel-insurance_write",
-    "iss": "http://localhost:8000/x-custom-jwt/v2",
-    "jti": "095174c2-e08b-43cf-b0c2-15febfb0128c",
-    "aud": "http://httpbin.apim.eu/anything"
-  },
-  "signature": "xxxxx"
-}
-```
-3) Test `Sample #3`
-- `Request #3`:
-```shell
-AT3=`cat ./sample-x-custom-jwt/3_input-access-token.txt` && http :8000/httpbin Authorization:' Bearer '$AT3
-```
-- `Response #3`: expected value of `x-custom-jwt` plugin:
-```json
-{
-  "header": {
-    "kid":"kong",
-    "jku": "http://localhost:8000/x-custom-jwt/jwks",
-    "typ": "JWT",
-    "alg": "RS256"
-  },
-  "payload": {
-    "iat": 1689441517,
-    "sub": "L000001",
-    "exp": 1689443317,
-    "client_id": "ma9oycqlep",
-    "part_nr_ansp_person": "39444822",
-    "pi.sri": "reaIoODhdakJoNacp3N0yQQU3Gw..rOmI",
-    "part_nr_org": "28021937",
-    "aud": "http://httpbin.apim.eu/anything",
-    "iss": "http://localhost:8000/x-custom-jwt/v2",
-    "jti": "13073b87-9dfe-478e-9d36-e6145808e533",
-    "scope": "openid profile email axa-ch_openapi_car-insurance_read axa-ch_openapi_vehicle-information_read"
-  },
-  "signature": "xxxxx"
-}
-```
-### Example for "Authorization: Basic"
+    "payload": {
+      "client_id": "ma9oycqlep",
+      "act": {
+        "client_id": "oauth-custom_id"
+      },
+      "aud": "http://httpbin.apim.eu/anything",
+      "part_nr_ansp_person": "39444822",
+      "iat": 1689239122,
+      "pi.sri": "reaIoODhdakJoNacp3N0yQQU3Gw..rOmI",
+      "sub": "L000001",
+      "part_nr_org": "28021937",
+      "exp": 1689240922,
+      "scope": "openid profile email",
+      "iss": "https://kong-gateway:8443/x-custom-jwt/v2",
+      "jti": "ca2a1f74-1041-437d-b908-29743e3381f0"
+    },
+    "signature": "xxxxx"
+  }
+  ```
+### Example #2: "Authorization: Basic" input
 1) Open the Service (created above)
 2) Create a new Route:
 - name=`basicAuth`
@@ -242,29 +184,29 @@ AT3=`cat ./sample-x-custom-jwt/3_input-access-token.txt` && http :8000/httpbin A
 http -a 'my-auth:My p@ssword!' :8000/basicAuth
 ```
 - `Response`: expected value of `x-custom-jwt` plugin:
-```json
-{
-  "header": {
-    "typ": "JWT",
-    "alg": "RS256",
-    "kid": "kong",
-    "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
-  },
-  "payload": {
-    "act": {
-      "client_id": "my-auth-username-ID"
+  ```json
+  {
+    "header": {
+      "typ": "JWT",
+      "alg": "RS256",
+      "kid": "kong",
+      "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
     },
-    "jti": "08e1f9e0-7cb7-4fb3-9d9a-1de487af3a03",
-    "iss": "https://kong-gateway:8443/x-custom-jwt",
-    "aud": "http://httpbin.apim.eu/anything",
-    "iat": 1712585199,
-    "exp": 1712586999,
-    "client_id": "012345AZERTY!"
-  },
-  "signature": "xxxxx"
-}
-```
-### Example for "mTLS Client Certificate"
+    "payload": {
+      "act": {
+        "client_id": "my-auth-username-ID"
+      },
+      "jti": "08e1f9e0-7cb7-4fb3-9d9a-1de487af3a03",
+      "iss": "https://kong-gateway:8443/x-custom-jwt",
+      "aud": "http://httpbin.apim.eu/anything",
+      "iat": 1712585199,
+      "exp": 1712586999,
+      "client_id": "012345AZERTY!"
+    },
+    "signature": "xxxxx"
+  }
+  ```
+### Example #3: "mTLS Client Certificate" input
 1) Create a CA Certificate: open Certificates page and click `New CA Certficate`
 - Copy/paste the content of `./mTLS/ca.cert.pem` in the CA field
 - Click on Create
@@ -281,33 +223,33 @@ http -a 'my-auth:My p@ssword!' :8000/basicAuth
 8) Click on create
 9) Test
 - `Request`:
-```shell
-http --verify=no --cert=./mTLS/1337.pem --cert-key=./mTLS/client.key https://localhost:8443/mtls-auth
-```
+  ```shell
+  http --verify=no --cert=./mTLS/1337.pem --cert-key=./mTLS/client.key https://localhost:8443/mtls-auth
+  ```
 - `Response`: expected value of `x-custom-jwt` plugin:
-```json
-{
-  "header": {
-    "typ": "JWT",
-    "alg": "RS256",
-    "kid": "kong",
-    "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
-  },
-  "payload": {
-    "act": {
-      "client_id": "demo@apim.eu"
+  ```json
+  {
+    "header": {
+      "typ": "JWT",
+      "alg": "RS256",
+      "kid": "kong",
+      "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
     },
-    "jti": "ded4a84c-5f5e-48a5-b7b3-42613df0e236",
-    "exp": 1689445843,
-    "iss": "http://localhost:8000/x-custom-jwt/v2",
-    "aud": "http://httpbin.apim.eu/anything",
-    "client_id": "C=WD, ST=Earth, O=Kong Inc., OU=Solution Engineering, CN=apim.eu, emailAddress=demo@apim.eu",
-    "iat": 1689444043
-    },
-  "signature": "xxxxx"
-}
-```
-### Example for "Key Authentication"
+    "payload": {
+      "act": {
+        "client_id": "demo@apim.eu"
+      },
+      "jti": "ded4a84c-5f5e-48a5-b7b3-42613df0e236",
+      "exp": 1689445843,
+      "iss": "http://localhost:8000/x-custom-jwt/v2",
+      "aud": "http://httpbin.apim.eu/anything",
+      "client_id": "C=WD, ST=Earth, O=Kong Inc., OU=Solution Engineering, CN=apim.eu, emailAddress=demo@apim.eu",
+      "iat": 1689444043
+      },
+    "signature": "xxxxx"
+  }
+  ```
+### Example #4: "Key Authentication" input
 1) Open the Service (created above)
 2) Create a new a Route:
 - name=`apiKey`
@@ -319,38 +261,38 @@ http --verify=no --cert=./mTLS/1337.pem --cert-key=./mTLS/client.key https://loc
 5) Click on `Create`
 6) Test
 - `Request`:
-```shell
-http :8000/apiKey apikey:'012345AZERTY!'
-```
+  ```shell
+  http :8000/apiKey apikey:'012345AZERTY!'
+  ```
 - `Response`: expected value of `x-custom-jwt` plugin:
+    * Base64 encoded:
+  ```
+  eyJraWQiOiJrb25nIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYiLCJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIn0.eyJhY3QiOnsiY2xpZW50X2lkIjoibXktYXV0aC11c2VybmFtZS1JRCJ9LCJqdGkiOiI4MTg1ZjEyYi0wOTZlLTQzOWYtYWVlZC00ZGQxNjlkZDNlYWQiLCJpc3MiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dCIsImF1ZCI6Imh0dHA6Ly9odHRwYmluLmFwaW0uZXUvYW55dGhpbmciLCJpYXQiOjE3MTI1ODU2MTUsImV4cCI6MTcxMjU4NzQxNSwiY2xpZW50X2lkIjoiMDEyMzQ1QVpFUlRZISJ9.VZpSWJGQwPadGR-U_fXKbIvLHo6j6KuvTBG6UONpeq-c4sJpDZtELVfD27arD8iMaz7ncGpkdAnhBsl-e4i_N_lEyu0srYp0kOVHKFcCf8qIJYWFQSk0NQ5YLc59-AZ51RooZlCLcBv5LGeABHLKg49geolOVSwWTg0dN6tqVn1W1SpiDt63KCrZsdTV-YhYtHBjAnBYywRcFIsZoKaOt67JI0VO6o9hFzrPE8Tsr1kx6cePQFL44CEnbkRG1bny46PJQ4a_kMrT-i1v3UIum0EYtyfrFygrpdqA6AlNbjd7wfmc-p7zYKX-Mg84PCNYw34EoMrWk-jEt7cLUyPo3w
+  ```
   * JSON decoded:
-```
-eyJraWQiOiJrb25nIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYiLCJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIn0.eyJhY3QiOnsiY2xpZW50X2lkIjoibXktYXV0aC11c2VybmFtZS1JRCJ9LCJqdGkiOiI4MTg1ZjEyYi0wOTZlLTQzOWYtYWVlZC00ZGQxNjlkZDNlYWQiLCJpc3MiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dCIsImF1ZCI6Imh0dHA6Ly9odHRwYmluLmFwaW0uZXUvYW55dGhpbmciLCJpYXQiOjE3MTI1ODU2MTUsImV4cCI6MTcxMjU4NzQxNSwiY2xpZW50X2lkIjoiMDEyMzQ1QVpFUlRZISJ9.VZpSWJGQwPadGR-U_fXKbIvLHo6j6KuvTBG6UONpeq-c4sJpDZtELVfD27arD8iMaz7ncGpkdAnhBsl-e4i_N_lEyu0srYp0kOVHKFcCf8qIJYWFQSk0NQ5YLc59-AZ51RooZlCLcBv5LGeABHLKg49geolOVSwWTg0dN6tqVn1W1SpiDt63KCrZsdTV-YhYtHBjAnBYywRcFIsZoKaOt67JI0VO6o9hFzrPE8Tsr1kx6cePQFL44CEnbkRG1bny46PJQ4a_kMrT-i1v3UIum0EYtyfrFygrpdqA6AlNbjd7wfmc-p7zYKX-Mg84PCNYw34EoMrWk-jEt7cLUyPo3w
-```
-  * JSON decoded:
-```json
-{
-  "header": {
-    "typ": "JWT",
-    "alg": "RS256",
-    "kid": "kong",
-    "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
-  },
-  "payload": {
+  ```json
   {
-    "act": {
-      "client_id": "my-auth-username-ID"
+    "header": {
+      "typ": "JWT",
+      "alg": "RS256",
+      "kid": "kong",
+      "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
     },
-    "jti": "8185f12b-096e-439f-aeed-4dd169dd3ead",
-    "iss": "https://kong-gateway:8443/x-custom-jwt",
-    "aud": "http://httpbin.apim.eu/anything",
-    "iat": 1712585615,
-    "exp": 1712587415,
-    "client_id": "012345AZERTY!"
-  },
-  "signature": "xxxxx"
-}
-```
+    "payload": {
+    {
+      "act": {
+        "client_id": "my-auth-username-ID"
+      },
+      "jti": "8185f12b-096e-439f-aeed-4dd169dd3ead",
+      "iss": "https://kong-gateway:8443/x-custom-jwt",
+      "aud": "http://httpbin.apim.eu/anything",
+      "iat": 1712585615,
+      "exp": 1712587415,
+      "client_id": "012345AZERTY!"
+    },
+    "signature": "xxxxx"
+  }
+  ```
 
 ## Check the JWS with https://jwt.io
 1) Open https://jwt.io
