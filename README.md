@@ -123,6 +123,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
   - path=`/httpbin`
   - Click on `Save`
 - Add `x-custom-jwt` plugin to the Service with:
+  - config.bearer_clientid_claim=`clientId` or `** Replace with the right claim for having the proper Kong consumer reconciliation**`
   - config.iss=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt)
   - config.jku=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt/jwks)
   - config.private_jwk=copy/paste the content of `./test-keys/jwk-private.json` **Or**
