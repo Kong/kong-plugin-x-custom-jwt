@@ -147,7 +147,7 @@ There is in this repo the [decK configuration](./decK/konnect.yaml) related to t
 - config.client_secret=`** Replace with your client Secret **`
 - config.issuer: `** Replace with your  /.well-known/openid-configuration URL **`
 - config.auth_methods: `client_credentials` + `introspection`
-- config.consumer_claim = `clientId` or `** Replace with with the proper claim **`
+- config.consumer_claim = `clientId` or `** Replace with with the proper claim for having the proper Kong consumer reconciliation**`
 4) Test
 - `Request`:
   ```shell
