@@ -135,7 +135,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 - Custom ID=`contact@konghq.com-ID1`
 7) Create a `contact@konghq.com` Client in your IdP Server for example #1
 
-There is in this repo the [decK configuration](./decK/konnect.yaml) related to following examples
+There is in this repo the [decK configuration](./decK/konnect.yaml) related to the prerequisites and following examples
 
 ### Example #1: "Authorization: Bearer" input
 1) Open the `httpbin` Service
