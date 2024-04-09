@@ -288,9 +288,6 @@ local function prepareJwtPayload(plugin_conf)
   if tostring(service.port) ~= '80'  and tostring(service.port) ~= '443' then
     service_port = ":" .. service.port
   end
-  for k,v in pairs(service) do
-    kong.log.notice("service, k: " .. k .. ", v: " .. tostring(v))
-  end
   
   local path = ""
   if service.path then
@@ -299,18 +296,18 @@ local function prepareJwtPayload(plugin_conf)
   data.aud = service.protocol .. "://" .. service.host .. service_port .. path
   data.jti = utils.uuid()
 
-  -- Find the Kong's Consumer (set by the Kong securiy plugins) linked with the Authenticaton method
-  local consumerKongHeader = "X-Consumer-Custom-Id"
-  local consumer_custom_id = kong.request.get_header (consumerKongHeader)
-  if consumer_custom_id then
-    kong.log.notice("Kong consumer mapping (with '" .. consumerKongHeader .. "') retrieved successfully: '" .. consumer_custom_id .. "'")
+  -- Get the entity of the currently authenticated Consumer (set by the Kong securiy plugins)
+  local consumer = kong.client.get_consumer()
+  if consumer then
+    local act_client_id = consumer.custom_id or consumer.id
+    kong.log.notice("Kong consumer retrieved successfully: '" .. act_client_id .. "'")
     if not data.act then
       -- Initialize the 'act' table
       data.act = {}
     end
-    data.act.client_id = consumer_custom_id
+    data.act.client_id = act_client_id
   else
-    kong.log.notice("There is no Kong consumer mapping (with '" .. consumerKongHeader .. "')")
+    kong.log.notice("There is no Kong consumer credential")
   end
 
   return data, errFunc

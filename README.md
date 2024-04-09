@@ -16,41 +16,41 @@ The plugin `x-custom-jwt` doesn't check the validity of the input itself (neithe
 -- Try to find one by one an Authentication given by the Consumer
 find "Authorization: Bearer" header
 if not "Authorization: Bearer" then
-    find "Authorization: Basic" header
+  find "Authorization: Basic" header
 end
 if not "Authorization: Bearer" and not "Authorization: Basic" then
-    find "mTLS Client Certificate"
+  find "mTLS Client Certificate"
 end
 if not "Authorization: Bearer" and not "Authorization: Basic" and not "mTLS Client Certificate" then
-    find "apikey" header
+  find "apikey" header
 end
 
 if not "Authorization: Bearer" and not "Authorization: Basic" and not "mTLS Client Certificate" and not "apikey" then
-    -- The Consumer's request is blocked
-    return "HTTP 401", "You are not authorized to access to this service"
+  -- The Consumer's request is blocked
+  return "HTTP 401", "You are not authorized to access to this service"
 end
 
 -- If the Consumer sends a correct Authentication, we craft the 'x-custom-jwt' JWT
 -- The 'client_id' claim has a value depending of the Consumer's Authentication
 if "Authorization: Bearer" then
-    -- Copy all the content of the AT (given by 'Authorization: Bearer')
-    x-custom-jwt.payload = AT.payload
-    x-custom-jwt.payload.client_id = x-custom-jwt.payload[plugin_conf.bearer_clientid_claim]
+  -- Copy all the content of the AT (given by 'Authorization: Bearer')
+  x-custom-jwt.payload = AT.payload
+  x-custom-jwt.payload.client_id = x-custom-jwt.payload[plugin_conf.bearer_clientid_claim]
 else if "Authorization: Basic" then
-    -- Copy the username of the Basic Auth
-    x-custom-jwt.payload.client_id = AT.payload.username
+  -- Copy the username of the Basic Auth
+  x-custom-jwt.payload.client_id = AT.payload.username
 else if "mTLS Client Certificate" then
-    -- Copy the entire subjectDN (all distinguished names) of the Client Certificate
-    x-custom-jwt.payload.client_id = subjectDN
+  -- Copy the entire subjectDN (all distinguished names) of the Client Certificate
+  x-custom-jwt.payload.client_id = subjectDN
 else if "apikey" then
-    -- Copy the 'apikey' value
-    x-custom-jwt.payload.client_id = apiKeyValue
+  -- Copy the 'apikey' value
+  x-custom-jwt.payload.client_id = apiKeyValue
 end
 
 -- If the 'x-custom-jwt.client_id' is not set
 if not x-custom-jwt.payload.client_id then
-    -- The Consumer's request is blocked
-    return "HTTP 401", "You are not authorized to consume this service. Internal Error"
+  -- The Consumer's request is blocked
+  return "HTTP 401", "You are not authorized to consume this service. Internal Error"
 end
 
 -- Header values for all Authentication methods
@@ -67,10 +67,7 @@ x-custom-jwt.payload.aud = "<url>" -- the Backend_Api URL
 x-custom-jwt.payload.jti = "<uuid>" -- Generation of a 'Universally unique identifier'
 
 -- 'act.sub' claim
-find "X-Consumer-Custom-Id" header
-if "X-Consumer-Custom-Id" then
-    x-custom-jwt.payload.act.client_id = "<X-Consumer-Custom-Id>" -- Got from 'X-Consumer-Custom-Id' header which is set by security plugins (OIDC, Basic Auth, Key Authentication, Mutual TLS Auth, etc.)
-end
+x-custom-jwt.payload.act.client_id = "<kong-consumer-id>" -- Set by security plugins (OIDC, Basic Auth, Key Authentication, Mutual TLS Auth, etc.)
 
 -- Sign the JWT with a private JWK (set in the plugin configuration) for building a JWS 
 jws_x_custom_jwt = jwt:sign (x-custom-jwt, private_jwk)
@@ -132,8 +129,8 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
   - config.private_jwk=paste the `Public and Private Keypair` from https://mkjwk.org/. If needed, adapt the `kid` to a custom value; the `kid` value must be the same as defined in `Prerequisites` heading (see the configuration of `Request Termination` plugin)
 6) Create a Consumer with:
 - Username=`contact@konghq.com`
-- Custom ID=`contact@konghq.com-ID1`
-7) Create a `contact@konghq.com` Client in your IdP Server for example #1
+- Custom Id=`contact@konghq.com-ID1`
+7) Create a `contact@konghq.com` Client in your IdP Server for Example #1
 
 There is in this repo the [decK configuration](./decK/konnect.yaml) related to the prerequisites and following examples
 
@@ -155,12 +152,12 @@ There is in this repo the [decK configuration](./decK/konnect.yaml) related to t
   ```
   or
   ```shell
-  http  :8000/oidc Authorization:'Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxOEVFR3YweE9FQkt3eFNJYVZDNGpHTWxVcF8yWURhS1pfMVdZNHV3b2lRIn0.eyJleHAiOjE3MTI2ODAwNTEsImlhdCI6MTcxMjY3OTc1MSwianRpIjoiYjZkODc2MDUtYmJiMy00NTU3LTlmZTAtMmY1NDE1NmEwNDg2IiwiaXNzIjoiaHR0cHM6Ly9zc28uYXBpbS5ldTo4NDQzL2F1dGgvcmVhbG1zL0plcm9tZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJjYzE2M2ZmNS1iZmMxLTRkNmYtYTFjMS02YjAzZTI5NWY2MmYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJjb250YWN0QGtvbmdocS5jb20iLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1qZXJvbWUiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImNsaWVudElkIjoiY29udGFjdEBrb25naHEuY29tIiwiY2xpZW50SG9zdCI6Ijg4LjE3NS45LjE0NiIsInByZWZlcnJlZF91c2VybmFtZSI6InNlcnZpY2UtYWNjb3VudC1jb250YWN0QGtvbmdocS5jb20iLCJjbGllbnRBZGRyZXNzIjoiODguMTc1LjkuMTQ2In0.hoDkdV4tEScWA9nOwRhN-FUzdNaVpG-Hqm9jwkvXPoUasx5SytZtzTKfVzEw2HIdE90VoKY478e4tnndoyy8kW72oHqlo6uwdBQwGwFhwiNypOXEk9zwv8ttwxvm51Fj6sLlGThGGnzt-TEeuKOiQsMTFyri_eTw6deXofE8MHimp1RhV19Cys_GtkEW48v6qpacWqEK_3uB_7vLMsVcI-pETSvUZnaThod-Adun0cwBQj6DMPS4Y4tkIFLYA0s20Jvd-0_5njxPigA56HTEROMxbm1HpJFuKryZ_-6abwnj61NYnZegxpyuxxsABryDyHwWjsupobITeQNFurMaUQ'
+  http  :8000/oidc Authorization:'Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxOEVFR3YweE9FQkt3eFNJYVZDNGpHTWxVcF8yWURhS1pfMVdZNHV3b2lRIn0.eyJleHAiOjE3MTI2ODU3MTYsImlhdCI6MTcxMjY4NTQxNiwianRpIjoiYWI2MmQwNjUtNDYyNy00NDllLTk4ZDAtNTA0MGYwYjI4OTNhIiwiaXNzIjoiaHR0cHM6Ly9zc28uYXBpbS5ldTo4NDQzL2F1dGgvcmVhbG1zL0plcm9tZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJjYzE2M2ZmNS1iZmMxLTRkNmYtYTFjMS02YjAzZTI5NWY2MmYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJjb250YWN0QGtvbmdocS5jb20iLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1qZXJvbWUiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImNsaWVudElkIjoiY29udGFjdEBrb25naHEuY29tIiwiY2xpZW50SG9zdCI6Ijg4LjE3NS45LjE0NiIsInByZWZlcnJlZF91c2VybmFtZSI6InNlcnZpY2UtYWNjb3VudC1jb250YWN0QGtvbmdocS5jb20iLCJjbGllbnRBZGRyZXNzIjoiODguMTc1LjkuMTQ2In0.AE3wHHhElQWnuDCJO_XYSvBw7RND4ZB8FpgB9wKlSR5Zbr3XyFwTrbtOdC5A6DAkMdcZ5s-sWg1qDVefM6k2qVe-gj2kmFcMBBt8DQPD7YBKbHdJGaPxqCDrNOrmhMt6MC7EldHd0rJ4beF7i49q4eCyYuSLCpKeS-eTFw5L-s98uGoRxgEZEocaZl9Atu_ajB84HQBpQ31Z0ObKwrMME7TU4nyOWXFYs7ZcGlhamjC2dmDiVJkxKL3ochq6jbnfQAkwjq6EVrK_0KPdMOANcwoYi0gg2TqDq0b16CSA8zUYYf0qVxV69Dyl_3tcWnqvHs7kzelQMeNMziOl4_GZMg'
   ```
 - `Response`: expected value of `x-custom-jwt` plugin:
     * Base64 encoded:
     ```
-    eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImprdSI6Imh0dHBzOi8va29uZy1nYXRld2F5Ojg0NDMveC1jdXN0b20tand0L2p3a3MiLCJraWQiOiJrb25nIn0.eyJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwiY2xpZW50X2lkIjoiY29udGFjdEBrb25naHEuY29tIiwiYXpwIjoiY29udGFjdEBrb25naHEuY29tIiwiYWNyIjoiMSIsImNsaWVudElkIjoiY29udGFjdEBrb25naHEuY29tIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LWNvbnRhY3RAa29uZ2hxLmNvbSIsImV4cCI6MTcxMjY4MTU1MSwiaXNzIjoiaHR0cHM6Ly9rb25nLWdhdGV3YXk6ODQ0My94LWN1c3RvbS1qd3QiLCJhdWQiOiJodHRwOi8vaHR0cGJpbi5hcGltLmV1L2FueXRoaW5nIiwiYWN0Ijp7ImNsaWVudF9pZCI6ImNvbnRhY3RAa29uZ2hxLmNvbS1JRDEifSwiaWF0IjoxNzEyNjc5NzUxLCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwianRpIjoiOGUxNjdkZjktYWRiNy00ODkxLTk1MTktYTZjZmRmMzg4N2M4IiwiY2xpZW50QWRkcmVzcyI6Ijg4LjE3NS45LjE0NiIsImNsaWVudEhvc3QiOiI4OC4xNzUuOS4xNDYiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInR5cCI6IkJlYXJlciIsInN1YiI6ImNjMTYzZmY1LWJmYzEtNGQ2Zi1hMWMxLTZiMDNlMjk1ZjYyZiIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsImRlZmF1bHQtcm9sZXMtamVyb21lIiwidW1hX2F1dGhvcml6YXRpb24iXX19.bCnMHP0KitIQGkap1fb84LUn2Ktep_o9XqTntSMYLb7is7qv_r2fwnIwgWlgujmfztvvFg0ZDUtVJYem0ODOLaZCHVOST37BwG81Gzl4i6wzMmlaXSwM1dcI8UXLaN3W5HgStCUlUgj7K5qN3z-difHaA0RwRQZdgIzC1OWORm3Z-p03L-A-VjzITgedt7SE6LGZLLwJwa3OUtVSyLBfXSRTLfqTg00VdhnhNjBUUIGfl8sKVw41nCsPgkO1XqHXtBdwkv6lp2zaMbuwb1GpQKePP2cP09KTSY8ZqssB2on1YBY1dDP6bUeOBxhyvDc-tdDZJlIemXqrwJ3Re1QTsw
+    eyJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIiwiYWxnIjoiUlMyNTYiLCJ0eXAiOiJKV1QiLCJraWQiOiJrb25nIn0.eyJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLWplcm9tZSIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJvcGVuaWQgZW1haWwgcHJvZmlsZSIsInN1YiI6ImNjMTYzZmY1LWJmYzEtNGQ2Zi1hMWMxLTZiMDNlMjk1ZjYyZiIsImF1ZCI6Imh0dHA6Ly9odHRwYmluLmFwaW0uZXUvYW55dGhpbmciLCJpYXQiOjE3MTI2ODU0MTYsImF6cCI6ImNvbnRhY3RAa29uZ2hxLmNvbSIsImNsaWVudEhvc3QiOiI4OC4xNzUuOS4xNDYiLCJjbGllbnRfaWQiOiJjb250YWN0QGtvbmdocS5jb20iLCJhY3IiOiIxIiwiYWN0Ijp7ImNsaWVudF9pZCI6ImNvbnRhY3RAa29uZ2hxLmNvbS1JRDEifSwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LWNvbnRhY3RAa29uZ2hxLmNvbSIsImNsaWVudEFkZHJlc3MiOiI4OC4xNzUuOS4xNDYiLCJpc3MiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dCIsImp0aSI6ImUyYTRhODBkLWNmOTgtNDU1Zi04YTZhLTQwY2Q2MTIzZGU1NSIsImNsaWVudElkIjoiY29udGFjdEBrb25naHEuY29tIiwiZXhwIjoxNzEyNjg3MjE2LCJ0eXAiOiJCZWFyZXIiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2V9.XnTIxPJ59YzpcQ8_Q-N_oyxQYwfJ-NQWY7iOXWmwehhyEotw0Z54r7n3zdm8GQXDHiqTkZFxtD7PnAwtphSRCWNnLe2lR0EV6nDMtElcHPViO-bs_ItFMKbLkKrzkWWNaUcK_oRAOMDB19QBvEaM0eoG6dE2o2a4KxQmtRxxDnB3RcTm5AABd7U9Iuqc6xrBoWBpWYdZakomWnJM78USvCB8sHAk4O2LdvzEbYElFuh-Z04sWE7OQVs_S4IF1xRTwaaeDKI2M3MVVvpIVaY-yUJ7tfXvxau4fc6fTEOGjqbv_oKqrKHHR8gcHJHsFppiKPpe2cn_S5xmiirHViBlaw
     ```
     * JSON decoded:
     ```json
@@ -172,6 +169,13 @@ There is in this repo the [decK configuration](./decK/konnect.yaml) related to t
         "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
       },
       "payload": {
+        "realm_access": {
+          "roles": [
+            "offline_access",
+            "default-roles-jerome",
+            "uma_authorization"
+          ]
+        },
         "resource_access": {
           "account": {
             "roles": [
@@ -181,32 +185,25 @@ There is in this repo the [decK configuration](./decK/konnect.yaml) related to t
             ]
           }
         },
-        "client_id": "contact@konghq.com",
-        "azp": "contact@konghq.com",
-        "acr": "1",
-        "clientId": "contact@konghq.com",
-        "preferred_username": "service-account-contact@konghq.com",
-        "exp": 1712681551,
-        "iss": "https://kong-gateway:8443/x-custom-jwt",
+        "scope": "openid email profile",
+        "sub": "cc163ff5-bfc1-4d6f-a1c1-6b03e295f62f",
         "aud": "http://httpbin.apim.eu/anything",
+        "iat": 1712685416,
+        "azp": "contact@konghq.com",
+        "clientHost": "88.175.9.146",
+        "client_id": "contact@konghq.com",
+        "acr": "1",
         "act": {
           "client_id": "contact@konghq.com-ID1"
         },
-        "iat": 1712679751,
-        "scope": "openid email profile",
-        "jti": "8e167df9-adb7-4891-9519-a6cfdf3887c8",
+        "preferred_username": "service-account-contact@konghq.com",
         "clientAddress": "88.175.9.146",
-        "clientHost": "88.175.9.146",
-        "email_verified": false,
+        "iss": "https://kong-gateway:8443/x-custom-jwt",
+        "jti": "e2a4a80d-cf98-455f-8a6a-40cd6123de55",
+        "clientId": "contact@konghq.com",
+        "exp": 1712687216,
         "typ": "Bearer",
-        "sub": "cc163ff5-bfc1-4d6f-a1c1-6b03e295f62f",
-        "realm_access": {
-          "roles": [
-            "offline_access",
-            "default-roles-jerome",
-            "uma_authorization"
-          ]
-        }
+        "email_verified": false
       },
       "signature": "xxxxx"
     }
@@ -273,7 +270,7 @@ There is in this repo the [decK configuration](./decK/konnect.yaml) related to t
 - `Response`: expected value of `x-custom-jwt` plugin:
     * Base64 encoded:
     ```
-    eyJraWQiOiJrb25nIiwidHlwIjoiSldUIiwiYWxnIjoiUlMyNTYiLCJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIn0.eyJhY3QiOnsiY2xpZW50X2lkIjoiY29udGFjdEBrb25naHEuY29tLUlEMSJ9LCJqdGkiOiI4OTBkNWFiMy1mOTViLTQ0OWMtODFiYS04ZWJlNjA3NDhlNGYiLCJpc3MiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dCIsImF1ZCI6Imh0dHA6Ly9odHRwYmluLmFwaW0uZXUvYW55dGhpbmciLCJpYXQiOjE3MTI1OTYyMTEsImV4cCI6MTcxMjU5ODAxMSwiY2xpZW50X2lkIjoiQz1VUywgU1Q9Q2FsaWZvcm5pYSwgTz1Lb25nIEluYy4sIE9VPUtvbm5lY3QsIENOPWtvbmcsIGVtYWlsQWRkcmVzcz1jb250YWN0QGtvbmdocS5jb20ifQ.hdvVaMro_dnaeEaraPCGDmVtqF-Ju8HautMLIgezXPzM6lYEfuN44ZFOO4-pAKBy6i7zcuI6HXnuOqHjwcK8pcggi9yic7XL2AJxwDXyyXlt6DDgixul4fFZnNQ2AQRZCTEfNSbVBk3MFNZHbv4bhwOmEn8GCt9xjK-fEQ6bcTIcphJ7xm-jnRQQd7IqJxoMj4nkM_HyN30zt0N3ynVNWcEZPl1v64PyWqAr6Fw6izL7sN0y4dSmeyufs36AYA0e6JznmR5CnnQrWyb1arwvuNx2t89BwMFEzThWk8SfvmY4r5fy1KyOou9p39V3UdMBNz6oGiLqd7wdYVEU2OH74g
+    eyJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIiwiYWxnIjoiUlMyNTYiLCJ0eXAiOiJKV1QiLCJraWQiOiJrb25nIn0.eyJhY3QiOnsiY2xpZW50X2lkIjoiY29udGFjdEBrb25naHEuY29tLUlEMSJ9LCJqdGkiOiIzOGNhMGY5MS1mZGJmLTQ5OTMtOWE4Ni0yZDUwYWFiMWY3MGIiLCJpc3MiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dCIsImNsaWVudF9pZCI6IkM9VVMsIFNUPUNhbGlmb3JuaWEsIE89S29uZyBJbmMuLCBPVT1Lb25uZWN0LCBDTj1rb25nLCBlbWFpbEFkZHJlc3M9Y29udGFjdEBrb25naHEuY29tIiwiZXhwIjoxNzEyNjg3MjkzLCJpYXQiOjE3MTI2ODU0OTMsImF1ZCI6Imh0dHA6Ly9odHRwYmluLmFwaW0uZXUvYW55dGhpbmcifQ.EzLDNu05GJRlYptJlAMDppxGw_bsIsQDZTpqeATvlacDWKilQyx2wSIwwdzzuouCoJw2odl_bSN-8Le6AhVrP3Ao0Ak3XL9LTrIbuKbJa3EYZGelOit7KcT51VpJfRWewXOPgKuDY7zPCw9oHisnV-gCZKR_IfY3-7oj4ILHczIpBt6JB8D2FstCGYwTLI5CV9JWlIU1QZpCQMord48tAvcyjYRL3-1qafds9H6Ko-w6UUlIPR5YB0pKstctVzb1-zotE4rbVqYK0zorPlBEobxOBNlZ3ATqwckx-onOvvN6IZEy6J3yqWLFI9K0iSymvgaWu2w2ERIZCJCAqPNIwQ
     ```
     * JSON decoded:
     ```json
@@ -288,12 +285,12 @@ There is in this repo the [decK configuration](./decK/konnect.yaml) related to t
         "act": {
           "client_id": "contact@konghq.com-ID1"
         },
-        "jti": "890d5ab3-f95b-449c-81ba-8ebe60748e4f",
+        "jti": "38ca0f91-fdbf-4993-9a86-2d50aab1f70b",
         "iss": "https://kong-gateway:8443/x-custom-jwt",
-        "aud": "http://httpbin.apim.eu/anything",
-        "iat": 1712596211,
-        "exp": 1712598011,
-        "client_id": "C=US, ST=California, O=Kong Inc., OU=Konnect, CN=kong, emailAddress=contact@konghq.com"
+        "client_id": "C=US, ST=California, O=Kong Inc., OU=Konnect, CN=kong, emailAddress=contact@konghq.com",
+        "exp": 1712687293,
+        "iat": 1712685493,
+        "aud": "http://httpbin.apim.eu/anything"
       },
       "signature": "xxxxx"
     }
