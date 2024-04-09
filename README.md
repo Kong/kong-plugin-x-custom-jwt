@@ -27,7 +27,7 @@ end
 
 if not "Authorization: Bearer" and not "Authorization: Basic" and not "mTLS Client Certificate" and not "apikey" then
     -- The Consumer's request is blocked
-    return "HTTP 401", "You are not authorized to consume this service"
+    return "HTTP 401", "You are not authorized to access to this service"
 end
 
 -- If the Consumer sends a correct Authentication, we craft the 'x-custom-jwt' JWT
@@ -35,6 +35,7 @@ end
 if "Authorization: Bearer" then
     -- Copy all the content of the AT (given by 'Authorization: Bearer')
     x-custom-jwt.payload = AT.payload
+    x-custom-jwt.payload.client_id = x-custom-jwt.payload[plugin_conf.bearer_clientid_claim]
 else if "Authorization: Basic" then
     -- Copy the username of the Basic Auth
     x-custom-jwt.payload.client_id = AT.payload.username
@@ -101,7 +102,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
   - `config.status_code`=`200`
   - `config.content_type`=`application/json`
   - `config.body`=copy/paste the content of `./test-keys/jwks-public.json` **Or**
-  - `Config.Body`=**The `Public JWK Key` must be pasted from https://mkjwk.org/ and add `"keys": [` property for having a JWKS** If needed, adapt the `kid` to a custom value. JWKS Structure:
+  - `Config.Body`=**The `Public JWK Key` must be pasted from https://mkjwk.org/ and add `"keys": [` property for having a JWKS**. If needed, adapt the `kid` to a custom value. JWKS Structure:
     ```json
     {
       "keys": [
@@ -132,45 +133,84 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 6) Create a Consumer with:
 - Username=`contact@konghq.com`
 - Custom ID=`contact@konghq.com-ID1`
+7) Create a `contact@konghq.com` Client in your IdP Server for example #1
 
+There is in this repo the [decK configuration](./decK/konnect.yaml) related to following examples
 
 ### Example #1: "Authorization: Bearer" input
-0) Let's use the `httpbin` route 
-1) Test `Sample #1`
-- `Request #1`:
-
+1) Open the `httpbin` Service
+2) Create a new Route:
+- name=`oidc`
+- path=`/oidc`
+3) Add `OpenId Connect` plugin to the Route with:
+- config.client_id=`** Replace with your client id **`
+- config.client_secret=`** Replace with your client Secret **`
+- config.issuer: `** Replace with your  /.well-known/openid-configuration URL **`
+- config.auth_methods: `client_credentials` + `introspection`
+- config.consumer_claim = `clientId` or `** Replace with with the proper claim **`
+4) Test
+- `Request`:
   ```shell
-  AT1=`cat ./sample-x-custom-jwt/1_input-access-token.txt` && http :8000/httpbin Authorization:' Bearer '$AT1
+  http  -a contact@konghq.com:<**YOUR_PASSWORD**> :8000/oidc
   ```
-- `Response #1`: expected value of `x-custom-jwt` plugin:
-
-  ```json
-  {
-    "header": {
-      "kid":"kong",
-      "jku": "http://localhost:8000/x-custom-jwt/jwks",
-      "typ": "JWT",
-      "alg": "RS256"
-    },
-    "payload": {
-      "client_id": "ma9oycqlep",
-      "act": {
-        "client_id": "oauth-custom_id"
+  or
+  ```shell
+  http  :8000/oidc Authorization:'Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxOEVFR3YweE9FQkt3eFNJYVZDNGpHTWxVcF8yWURhS1pfMVdZNHV3b2lRIn0.eyJleHAiOjE3MTI2ODAwNTEsImlhdCI6MTcxMjY3OTc1MSwianRpIjoiYjZkODc2MDUtYmJiMy00NTU3LTlmZTAtMmY1NDE1NmEwNDg2IiwiaXNzIjoiaHR0cHM6Ly9zc28uYXBpbS5ldTo4NDQzL2F1dGgvcmVhbG1zL0plcm9tZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJjYzE2M2ZmNS1iZmMxLTRkNmYtYTFjMS02YjAzZTI5NWY2MmYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJjb250YWN0QGtvbmdocS5jb20iLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1qZXJvbWUiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImNsaWVudElkIjoiY29udGFjdEBrb25naHEuY29tIiwiY2xpZW50SG9zdCI6Ijg4LjE3NS45LjE0NiIsInByZWZlcnJlZF91c2VybmFtZSI6InNlcnZpY2UtYWNjb3VudC1jb250YWN0QGtvbmdocS5jb20iLCJjbGllbnRBZGRyZXNzIjoiODguMTc1LjkuMTQ2In0.hoDkdV4tEScWA9nOwRhN-FUzdNaVpG-Hqm9jwkvXPoUasx5SytZtzTKfVzEw2HIdE90VoKY478e4tnndoyy8kW72oHqlo6uwdBQwGwFhwiNypOXEk9zwv8ttwxvm51Fj6sLlGThGGnzt-TEeuKOiQsMTFyri_eTw6deXofE8MHimp1RhV19Cys_GtkEW48v6qpacWqEK_3uB_7vLMsVcI-pETSvUZnaThod-Adun0cwBQj6DMPS4Y4tkIFLYA0s20Jvd-0_5njxPigA56HTEROMxbm1HpJFuKryZ_-6abwnj61NYnZegxpyuxxsABryDyHwWjsupobITeQNFurMaUQ'
+  ```
+- `Response`: expected value of `x-custom-jwt` plugin:
+    * Base64 encoded:
+    ```
+    eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImprdSI6Imh0dHBzOi8va29uZy1nYXRld2F5Ojg0NDMveC1jdXN0b20tand0L2p3a3MiLCJraWQiOiJrb25nIn0.eyJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwiY2xpZW50X2lkIjoiY29udGFjdEBrb25naHEuY29tIiwiYXpwIjoiY29udGFjdEBrb25naHEuY29tIiwiYWNyIjoiMSIsImNsaWVudElkIjoiY29udGFjdEBrb25naHEuY29tIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LWNvbnRhY3RAa29uZ2hxLmNvbSIsImV4cCI6MTcxMjY4MTU1MSwiaXNzIjoiaHR0cHM6Ly9rb25nLWdhdGV3YXk6ODQ0My94LWN1c3RvbS1qd3QiLCJhdWQiOiJodHRwOi8vaHR0cGJpbi5hcGltLmV1L2FueXRoaW5nIiwiYWN0Ijp7ImNsaWVudF9pZCI6ImNvbnRhY3RAa29uZ2hxLmNvbS1JRDEifSwiaWF0IjoxNzEyNjc5NzUxLCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwianRpIjoiOGUxNjdkZjktYWRiNy00ODkxLTk1MTktYTZjZmRmMzg4N2M4IiwiY2xpZW50QWRkcmVzcyI6Ijg4LjE3NS45LjE0NiIsImNsaWVudEhvc3QiOiI4OC4xNzUuOS4xNDYiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInR5cCI6IkJlYXJlciIsInN1YiI6ImNjMTYzZmY1LWJmYzEtNGQ2Zi1hMWMxLTZiMDNlMjk1ZjYyZiIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsImRlZmF1bHQtcm9sZXMtamVyb21lIiwidW1hX2F1dGhvcml6YXRpb24iXX19.bCnMHP0KitIQGkap1fb84LUn2Ktep_o9XqTntSMYLb7is7qv_r2fwnIwgWlgujmfztvvFg0ZDUtVJYem0ODOLaZCHVOST37BwG81Gzl4i6wzMmlaXSwM1dcI8UXLaN3W5HgStCUlUgj7K5qN3z-difHaA0RwRQZdgIzC1OWORm3Z-p03L-A-VjzITgedt7SE6LGZLLwJwa3OUtVSyLBfXSRTLfqTg00VdhnhNjBUUIGfl8sKVw41nCsPgkO1XqHXtBdwkv6lp2zaMbuwb1GpQKePP2cP09KTSY8ZqssB2on1YBY1dDP6bUeOBxhyvDc-tdDZJlIemXqrwJ3Re1QTsw
+    ```
+    * JSON decoded:
+    ```json
+    {
+      "header": {
+        "typ": "JWT",
+        "alg": "RS256",
+        "kid": "kong",
+        "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
       },
-      "aud": "http://httpbin.apim.eu/anything",
-      "part_nr_ansp_person": "39444822",
-      "iat": 1689239122,
-      "pi.sri": "reaIoODhdakJoNacp3N0yQQU3Gw..rOmI",
-      "sub": "L000001",
-      "part_nr_org": "28021937",
-      "exp": 1689240922,
-      "scope": "openid profile email",
-      "iss": "https://kong-gateway:8443/x-custom-jwt/v2",
-      "jti": "ca2a1f74-1041-437d-b908-29743e3381f0"
-    },
-    "signature": "xxxxx"
-  }
-  ```
+      "payload": {
+        "resource_access": {
+          "account": {
+            "roles": [
+              "manage-account",
+              "manage-account-links",
+              "view-profile"
+            ]
+          }
+        },
+        "client_id": "contact@konghq.com",
+        "azp": "contact@konghq.com",
+        "acr": "1",
+        "clientId": "contact@konghq.com",
+        "preferred_username": "service-account-contact@konghq.com",
+        "exp": 1712681551,
+        "iss": "https://kong-gateway:8443/x-custom-jwt",
+        "aud": "http://httpbin.apim.eu/anything",
+        "act": {
+          "client_id": "contact@konghq.com-ID1"
+        },
+        "iat": 1712679751,
+        "scope": "openid email profile",
+        "jti": "8e167df9-adb7-4891-9519-a6cfdf3887c8",
+        "clientAddress": "88.175.9.146",
+        "clientHost": "88.175.9.146",
+        "email_verified": false,
+        "typ": "Bearer",
+        "sub": "cc163ff5-bfc1-4d6f-a1c1-6b03e295f62f",
+        "realm_access": {
+          "roles": [
+            "offline_access",
+            "default-roles-jerome",
+            "uma_authorization"
+          ]
+        }
+      },
+      "signature": "xxxxx"
+    }
+    ```
 ### Example #2: "Authorization: Basic" input
 1) Open the `httpbin` Service
 2) Create a new Route:

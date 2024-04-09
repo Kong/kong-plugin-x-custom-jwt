@@ -3,7 +3,7 @@ local xCustomJWT = {
     VERSION = '1.0.0',
   }
 
-local genericErrMsg = "You are not authorized to consume this service"
+local genericErrMsg = "You are not authorized to access to this service"
 
 ---------------------------------------------------------------------------------------------------
 -- Craft the JWT 'x-custom-jwt' and Sign it having a JWS
@@ -231,6 +231,12 @@ local function prepareJwtPayload(plugin_conf)
       -- Copy the entire content of AT
       data = utils.deep_copy(bearer_token_payload, true)
       data = bearer_token_payload
+      -- Get the clientId claim (from the plugin configuration) and copy it
+      if data[plugin_conf.bearer_clientid_claim] then
+        data.client_id = data[plugin_conf.bearer_clientid_claim]
+      else
+        verboseMsg = "Unable to get '" .. plugin_conf.bearer_clientid_claim .. "' claim from the Bearer token"
+      end
     else
       -- Error: Unable to get the 'Auth token' payload
       verboseMsg = "Unable to get the 'Auth token' payload: " .. err
