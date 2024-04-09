@@ -1,0 +1,226 @@
+_format_version: "3.0"
+_info:
+  defaults: {}
+  select_tags:
+  - x-custom-jwt
+_konnect:
+  control_plane_name: cp-x-custom-jwt
+ca_certificates:
+- cert: |-
+    -----BEGIN CERTIFICATE-----
+    MIIFqzCCA5OgAwIBAgIUKOFQe8rMSSNaRekdnazL6fi0GXowDQYJKoZIhvcNAQEL
+    BQAwXTELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlmb3JuaWExFjAUBgNVBAcM
+    DVNhbiBGcmFuY2lzY28xEjAQBgNVBAoMCUtvbmcgSW5jLjENMAsGA1UEAwwES29u
+    ZzAeFw0yNDA0MDgxNzA2MjBaFw00NDA0MDMxNzA2MjBaMF0xCzAJBgNVBAYTAlVT
+    MRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMRIw
+    EAYDVQQKDAlLb25nIEluYy4xDTALBgNVBAMMBEtvbmcwggIiMA0GCSqGSIb3DQEB
+    AQUAA4ICDwAwggIKAoICAQCqO1qSQnVVqycNMf2xm5foGeItB+S2hF08j1XlW6KH
+    ixwjfBQNO+KboWtRKtkoLl6TkXV5gldYBzDb2pbn2c+kRNXH/g00akmt5Q85Do/E
+    Hzz2Rbl119pV3jd3M//1ssgF4mkMqlPGYQL/RIUs10u88UsjpB344aS0T4VW+t/d
+    FWpia2xc2cbEvWT9gCv8R61Jp7Yrsapi4SS0rwvG/QnuhOz632h95ZirEyNNPF5/
+    keC/fRzmWgBhlEEXdjStB6MFylgrG7EBmLd3OX6eVs9udF84VYWD94n4dBxDA33l
+    Njty0ajxn5Mp/hOtTcPpjbW9u3CXId+EdcS5M3Oc+ngs0QuE7ORdq9MIEmsPhsfn
+    tiIIEodmuaTdHPM5bpXW+C3zJJcQQ3dRmrPAs2ULF4iOD/F4tcA0/jS3CaKkHxWJ
+    dcALI3zcSVzn9GOHVwIFHUaCEUTdhHIlJiXBQsIc6PitBdA0QsNl+0zNapFZ1q1I
+    lK9Ga1iHkQMa30H7k7px7tNiXTpBiwZhh5fGV1EcyRVyAiLE2kO/hQ4nRKuKFdt4
+    YXPsF6sHu5tOVNihHHehOv06OtqVCX52qsh5+H+oHAnodbv4gS9hqrtvTOiRQ1nE
+    itgpXyzrINyKf/hwtkRQ8Ero5lahZimBNmGOADjFMjsCZTAFkHJvrb0vWNOJ+1oQ
+    RQIDAQABo2MwYTAdBgNVHQ4EFgQUVhC3Llg62JoGPZl6bBTPsNLYgOgwHwYDVR0j
+    BBgwFoAUVhC3Llg62JoGPZl6bBTPsNLYgOgwDwYDVR0TAQH/BAUwAwEB/zAOBgNV
+    HQ8BAf8EBAMCAYYwDQYJKoZIhvcNAQELBQADggIBAFt/V6Hqmo9Im+pGEBabzUum
+    5G1IlGlj7DgH/fxaSaAGdnVZGxgjX0Uo2mkTeP0DHH+cHGF90HSiHzGTO8Afjhdp
+    9RRNbI1R7tUyhzDQm5qV3WNZc9yXnF/kvw1EVM+ZKhHdePBE8Gsdd2s5ydgM0khL
+    FqlIgeaqJx2X1GmM7lbOiO1Ixul6zGW0PWencdEeJHzBN5Rh/wPiz6nVo8rXuMch
+    k/XSweqiLx2wZMGtNME9j5SXAJh5q2vjDkT+q8qHy7REwdADCxlRe4mXBcUMMVM7
+    Dv3ooX3y6J+vBkta/Y592mzWODXAxLFGXLUEQr0Eau9zmKAeEOJUWy6aewS1RLap
+    y8HC5E8H8We+bCF2WkncINAKfHc/tLliyfuXAFSFKzZ35lYLZlMJ4rHhMbN9zD9I
+    2EsAyY2RQf/oARkwAaCKiVo4HaI9FavfJbXEDaVY46mdWP8K+Zxceg9GXIifnI5J
+    9Rcmsb8wM9bUACAsqrPd/rM+FUENEX1pKI0GecvDZCGWUBL4e/VrLtIIrkAjNY7l
+    /VR+RL+fuHhlSOtpAhv1qgn7Gq5h/jR3c20wQ5RYEm5Uex5GZDZ49cbQL1nrKGM9
+    3n072scOWjvD6HnLgvqizvH8AFzl/er1IBIJCXbIUz58D6GUwlT+DoEGHi6wC+AJ
+    /lcmpm9D5550gcwyO1U3
+    -----END CERTIFICATE-----
+  cert_digest: 3721c25bd711e8847e89c61cc97e004144a0e1b5b32217936bab0e059df77ec6
+  id: 7b9af8ff-b16c-45f0-9c87-766d20b1dc2e
+consumers:
+- custom_id: contact@konghq.com-ID1
+  keyauth_credentials:
+  - key: 012345AZERTY!
+  username: contact@konghq.com
+routes:
+- https_redirect_status_code: 426
+  name: x-custom-jwt-jwks
+  path_handling: v0
+  paths:
+  - /x-custom-jwt/jwks
+  plugins:
+  - config:
+      credentials: false
+      exposed_headers: null
+      headers: null
+      max_age: null
+      methods:
+      - GET
+      - HEAD
+      - PUT
+      - PATCH
+      - POST
+      - DELETE
+      - OPTIONS
+      - TRACE
+      - CONNECT
+      origins:
+      - '*'
+      preflight_continue: false
+      private_network: false
+    enabled: true
+    name: cors
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      body: '{   "keys": [     {     "kty": "RSA",     "e": "AQAB",     "use": "sig",     "kid":
+        "kong",     "alg": "RS256",     "n": "k9YtH6CpbOc9Kz3uOGXm24hfe6deGnmiALFwtHdtuBnJ2SRYhH4OP5jKp8IWI9WJF8CXQCvN_bvIklmAkKsE6HBuVh_fmA9frbrpERqZu92fgBXtrqau-6pPWUqN8QrQqLCGINbieMu5hKDx4IaxWOzg3khRoUa0mM7qnttetnrX4Sbi3sYpA16HGrTptgfkE_uTsYB4wweZox7rXKXHsvQ6F84TQewmBLYBExASZ82EsrgRj26O_G-bvH39jzkvJTunvCGQUjuzO2Naf8Hx2LS8AMA10eW30-B7V4zBBabSbVqUDwg5lgT2wC34iXQexFiOi6gNJ7L50egW7oHgJQ"     }   ]
+        }'
+      content_type: application/json
+      echo: false
+      message: null
+      status_code: 200
+      trigger: null
+    enabled: true
+    name: request-termination
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  preserve_host: false
+  protocols:
+  - http
+  - https
+  regex_priority: 0
+  request_buffering: true
+  response_buffering: true
+  strip_path: true
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: httpbin.apim.eu
+  name: httpbin
+  path: /anything
+  plugins:
+  - config:
+      apikey_header: apikey
+      expires_in: 1800
+      iss: https://kong-gateway:8443/x-custom-jwt
+      jku: https://kong-gateway:8443/x-custom-jwt/jwks
+      private_jwk: '{     "p": "8R6DlZVPrq_18PvBpW15aUt5WsgSSR9pkKq-NKzTCCAN2sv60WviPwAHWq73oxmH3CQjRxNoB9gWX4gKqvZa7BzM_zriHhkb2PzqzRc7ctAXfgZx__CV0e2FPb-7FFypuGeRetHSKmINkymPReU2M4_kC-CWHvl0rAFQFSZzMBU",     "kty":
+        "RSA",     "q": "nPXfvgJjj6HqhDV-9_305eP2LSG06k9qUSKhiHs0nyvmxSKRHYFE-RFA492ixTMjHbOic6WrTJ3kmNzQMOipH4qhkXI7_lPeaDNRzKgroYaIAB_2rHr7dDyq7hbkuC7tqvQDd8SWGI6ed0IixFNK24kknE_0aUmCS-Ao2UvB49E",     "d":
+        "PN8-ezxjJsVcKXb5pN1InnJbpoW2uL4Gl7R4TMa0Nc7gjvlpPTzOTx9xqnu_NAgTx-T0ImcnDWgJ4UDbMDZK8g6BUBMVtP33johcuT8zt-g8abgdwwE9IcDxpTmOkoa6fgsZX2I7pDN2cwb2MVYkphH7UWuDuR1s9VKVxs1bBVWRrq-DSmeenXDknTTWyQzOAwErRJSj2FTnSCrNMrs9akuqxXxHi2P--nHiXA0M-tlRRW_tk5vC0GQsccRo9a4brAwLh5ILYYV-GNtfGJURiiOG8WWD3M--cXl4cwSecbfzKuUuZIWxQEoKHYteCJTcidR_bFsOQkSro72RdQUGQQ",     "e":
+        "AQAB",     "use": "sig",     "kid": "kong",     "qi": "iub-v9DQpgzsYGAa-WX6ISUdVltxbxvcY1fJ4DPV8v9u4AIREzozJ7MwgShYSY0pm6D_UrKNZ_Eprh14JWir2m6HecNR2wI5CJ6BJhPbqWYcEYhaXcav4bZ5P18jOil9rqqLITuoEJ0YmZsANND2-gU32Vu3tYrCHABSIiDujsU",     "dp":
+        "noApjYYWWEXxTVWhiSZ6vj3P615Dru_ITEIBQM0u-FNh6CdYnJvnoPRa4UDNJtkclxjmW82lACsLIgdiw9moETgphcnmZFSrGqu_icww1xt1pfGEtPMo-VPC18GWsB7trnvehTcyiYvlUozqUs8HH0QCa9BZvsjK6lr-kriw1bU",     "alg":
+        "RS256",     "dq": "RPEyb5E5DfO-wIeG14KyuO9iR_yQLILpXe3qKbqEKI3t9RTzzJPlKclMSUomnpuRhxBKAKX6EdMgf4wt3e2zq2kHAo28kD9iZz5zZYNQdshSoEtp2-TA4hNruNxRZh0mw3oes9KjYvHx5Mwl3ToAnWEltYrg_gYNtyokhx1hcqE",     "n":
+        "k9YtH6CpbOc9Kz3uOGXm24hfe6deGnmiALFwtHdtuBnJ2SRYhH4OP5jKp8IWI9WJF8CXQCvN_bvIklmAkKsE6HBuVh_fmA9frbrpERqZu92fgBXtrqau-6pPWUqN8QrQqLCGINbieMu5hKDx4IaxWOzg3khRoUa0mM7qnttetnrX4Sbi3sYpA16HGrTptgfkE_uTsYB4wweZox7rXKXHsvQ6F84TQewmBLYBExASZ82EsrgRj26O_G-bvH39jzkvJTunvCGQUjuzO2Naf8Hx2LS8AMA10eW30-B7V4zBBabSbVqUDwg5lgT2wC34iXQexFiOi6gNJ7L50egW7oHgJQ"
+        }'
+      verbose: false
+    enabled: true
+    name: x-custom-jwt
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  port: 80
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: apiKey
+    path_handling: v0
+    paths:
+    - /apiKey
+    plugins:
+    - config:
+        anonymous: null
+        hide_credentials: false
+        key_in_body: false
+        key_in_header: true
+        key_in_query: true
+        key_names:
+        - apikey
+        run_on_preflight: true
+      enabled: true
+      name: key-auth
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+      - ws
+      - wss
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  - https_redirect_status_code: 426
+    name: httpbin
+    path_handling: v0
+    paths:
+    - /httpbin
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  - https_redirect_status_code: 426
+    name: mtlsAuth
+    path_handling: v0
+    paths:
+    - /mtlsAuth
+    plugins:
+    - config:
+        allow_partial_chain: false
+        anonymous: null
+        authenticated_group_by: CN
+        ca_certificates:
+        - 7b9af8ff-b16c-45f0-9c87-766d20b1dc2e
+        cache_ttl: 60
+        cert_cache_ttl: 60000
+        consumer_by:
+        - username
+        - custom_id
+        default_consumer: null
+        http_proxy_host: null
+        http_proxy_port: null
+        http_timeout: 30000
+        https_proxy_host: null
+        https_proxy_port: null
+        revocation_check_mode: IGNORE_CA_ERROR
+        send_ca_dn: false
+        skip_consumer_lookup: false
+      enabled: true
+      name: mtls-auth
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
