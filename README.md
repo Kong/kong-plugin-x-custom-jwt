@@ -67,7 +67,7 @@ x-custom-jwt.payload.aud = "<url>" -- the Backend_Api URL
 x-custom-jwt.payload.jti = "<uuid>" -- Generation of a 'Universally unique identifier'
 
 -- 'act.sub' claim
-x-custom-jwt.payload.act.client_id = "<kong-consumer-id>" -- Set by security plugins (OIDC, Basic Auth, Key Authentication, Mutual TLS Auth, etc.)
+x-custom-jwt.payload.act.client_id = "<kong-consumer-custom-id>" or " "<kong-consumer-id>" -- Set by security plugins (OIDC, Basic Auth, Key Authentication, Mutual TLS Auth, etc.)
 
 -- Sign the JWT with a private JWK (set in the plugin configuration) for building a JWS 
 jws_x_custom_jwt = jwt:sign (x-custom-jwt, private_jwk)
@@ -123,7 +123,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
   - path=`/httpbin`
   - Click on `Save`
 - Add `x-custom-jwt` plugin to the Service with:
-  - config.bearer_clientid_claim=`clientId` or `** Replace with the right claim for having the proper Kong consumer reconciliation**`
+  - config.bearer_clientid_claim=`clientId` or `** Replace with the right claim for having the proper Kong consumer reconciliation **`
   - config.iss=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt)
   - config.jku=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt/jwks)
   - config.private_jwk=copy/paste the content of `./test-keys/jwk-private.json` **Or**
@@ -133,7 +133,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 - Custom Id=`contact@konghq.com-ID1`
 7) Create a `contact@konghq.com` Client in your IdP Server for Example #1
 
-There is in this repo the [decK configuration](./decK/konnect.yaml) related to the prerequisites and following examples
+In this repo, there is the [decK configuration](./decK/konnect.yaml) related to the prerequisites and following examples
 
 ### Example #1: "Authorization: Bearer" input
 1) Open the `httpbin` Service
@@ -141,11 +141,11 @@ There is in this repo the [decK configuration](./decK/konnect.yaml) related to t
 - name=`oidc`
 - path=`/oidc`
 3) Add `OpenId Connect` plugin to the Route with:
-- config.client_id=`** Replace with your client id **`
-- config.client_secret=`** Replace with your client Secret **`
-- config.issuer: `** Replace with your  /.well-known/openid-configuration URL **`
+- config.client_id=`** Replace with your Client Id **`
+- config.client_secret=`** Replace with your Client Secret **`
+- config.issuer: `** Replace with your /.well-known/openid-configuration URL **`
 - config.auth_methods: `client_credentials` + `introspection`
-- config.consumer_claim = `clientId` or `** Replace with the right claim for having the proper Kong consumer reconciliation**`
+- config.consumer_claim = `clientId` or `** Replace with the right claim for having the proper Kong consumer reconciliation **`
 4) Test
 - `Request`:
   ```shell
@@ -346,6 +346,6 @@ There is in this repo the [decK configuration](./decK/konnect.yaml) related to t
 1) Open https://jwt.io
 2) Copy/paste the `x-custom-jwt` header value
 - If everything works correctly the jwt.io sends a `Signature Verified` message
-- The public key is downloaded automatically through the route `x-custom-jwt-jwks` and the `Request Termination` plugin. If it's not the case, open the Browser Developer Tools and see the network tab and console tab. The classic issue is getting the JWKS by using the self-signed Kong certificate (on 8443); it's easy to fix the issue by opening a tab, going on the `jku` request (i.e. https://kong-gateway:8443/x-custom-jwt/jwks), clicking on Advanced and by clicking on 'Proceed to'
+- The public key is downloaded automatically through the `x-custom-jwt-jwks` route and the `Request Termination` plugin. If it's not the case, open the Browser Developer Tools and see the network tab and console tab. The classic issue is getting the JWKS by using the self-signed Kong certificate (on 8443); it's easy to fix the issue by opening a new tab, going on the `jku` request (i.e. https://kong-gateway:8443/x-custom-jwt/jwks), clicking on Advanced and by clicking on `Proceed to`
 - There is a known limitation on jwt.io with `"use": "enc"` the match isn't done correctly and the JWK is not loaded automatically: we simply have to copy/paste the public JWK directly in the `VERIFY SIGNATURE` of the web page. With `"use": "sig"` there is no restriction
 ![Alt text](/images/1-JWT.io.jpg "jwt.io")
