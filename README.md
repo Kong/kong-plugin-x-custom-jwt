@@ -20,7 +20,7 @@ The plugin `x-custom-jwt` doesn't check the validity of the input itself (neithe
 |config.expires_in|1800|Number of seconds for the `exp` (expiration) claim and added to the current time|
 |config.iss|https://kong-gateway:8443/x-custom-jwt|The `iss` (issuer) claim that identifies Kong that issued the new JWT|
 |config.jku|https://kong-gateway:8443/x-custom-jwt/jwks|The `jku` (JWK set Url) that points to a Kong route for delivering the well-known location of JWKs|
-|config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}|The private JWK key to sign the new JWT. The format is JSON|
+|config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}|The JWK private key to sign the new JWT. The format is JSON|
 |config.verbose|false|Append to the Consumer a detailed message in case of error|
 
 ## High level algorithm to craft and sign the `x-custom-jwt`
