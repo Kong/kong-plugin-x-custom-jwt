@@ -19,7 +19,7 @@ The plugin `x-custom-jwt` doesn't check the validity of the input itself (neithe
 |config.custom_jwt_header|X-Custom-Jwt|The Http header name where to drop the new JWT. It overrides any existing value. If the value is `Authorization` the `Bearer` type is added in the value|
 |config.expires_in|1800|Number of seconds for the `exp` (expiration) claim and added to the current time|
 |config.iss|https://kong-gateway:8443/x-custom-jwt|The `iss` (issuer) claim that identifies Kong that issued the new JWT|
-|config.jku|https://kong-gateway:8443/x-custom-jwt/jwks|The `jku` (JWK set Url) points to a well-known location where the set of JWKs is stored|
+|config.jku|https://kong-gateway:8443/x-custom-jwt/jwks|The `jku` (JWK set Url) that points to a Kong route for getting the well-known location where the set of JWKs is stored|
 |config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}|The private JWK key to sign the new JWT. The format is JSON|
 |config.verbose|false|Append to the Consumer a detailed message in case of error|
 
