@@ -16,12 +16,12 @@ The plugin `x-custom-jwt` doesn't check the validity of the input itself (neithe
 |:------------------------------|:----------------|:-----------------------------------------------------------|
 |config.apikey_header|apikey|The Http header name to get the `apiKey` for Key Authentication|
 |config.bearer_clientid_claim|clientId|The claim name to extract the `clientId` (from a JWT) for Authentication Bearer|
-|custom_jwt_header|X-Custom-Jwt|The Http header name where to drop the new JWT. It overrides any existing value. If the value is `Authorization` the `Bearer` type is added in the value|
-|expires_in|1800|Number of seconds for the `exp` (expiration) claim and added to the current time|
-|iss|https://kong-gateway:8443/x-custom-jwt|The `iss` (issuer) claim that identifies the principal that issued the new JWT|
-|jku|https://kong-gateway:8443/x-custom-jwt/jwks|The `jku` (JWK set Url) points to a well-known location where the set of JWKs is stored|
-|private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}|The private JWK key to sign the new JWT. The format is JSON|
-|verbose|false|Append to the Consumer a detailed message in case of error|
+|config.custom_jwt_header|X-Custom-Jwt|The Http header name where to drop the new JWT. It overrides any existing value. If the value is `Authorization` the `Bearer` type is added in the value|
+|config.expires_in|1800|Number of seconds for the `exp` (expiration) claim and added to the current time|
+|config.iss|https://kong-gateway:8443/x-custom-jwt|The `iss` (issuer) claim that identifies the principal that issued the new JWT|
+|config.jku|https://kong-gateway:8443/x-custom-jwt/jwks|The `jku` (JWK set Url) points to a well-known location where the set of JWKs is stored|
+|config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}|The private JWK key to sign the new JWT. The format is JSON|
+|config.verbose|false|Append to the Consumer a detailed message in case of error|
 
 ## High level algorithm to craft and sign the `x-custom-jwt`
 ```lua
