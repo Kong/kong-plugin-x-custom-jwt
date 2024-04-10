@@ -11,7 +11,7 @@ The plugin `x-custom-jwt` doesn't check the validity of the input itself (neithe
 - [Mutual TLS Authentication](https://docs.konghq.com/hub/kong-inc/mtls-auth/)
 - [Key Authentication](https://docs.konghq.com/hub/kong-inc/key-auth/)
 
-## `x-custom-jwt` configuration reference
+## `x-custom-jwt` plugin configuration reference
 |FORM PARAMETER                 |DEFAULT          |DESCRIPTION                                                 |
 |:------------------------------|:----------------|:-----------------------------------------------------------|
 |config.apikey_header|apikey|The Http header name to get the `apiKey` for Key Authentication|
