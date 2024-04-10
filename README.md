@@ -1,8 +1,8 @@
-# Kong plugin | `x-custom-jwt`: craft a new and custom JWT and sign it for building a JWS
-1) Craft a new and custom JWT using the input Authentication properties
+# Kong plugin | `x-custom-jwt`: craft a custom JWT and sign it for building a JWS
+1) Craft a custom JWT using the input Authentication properties
 2) Load the private JWK from the plugin's configuration and convert it into a PEM format
 3) Sign the JWT with the PEM string for building a JWS (RS256 algorithm)
-4) Add the new JWT to an HTTP Request Header backend API
+4) Add the custom JWT to an HTTP Request Header backend API
 
 The plugin `x-custom-jwt` doesn't check the validity of the input itself (neither checking of JWT signature & JWT expiration, nor user/password checking, nor checking Client TLS checking, nor api key checking). So it's **mandatory to use this plugin in conjunction with one of the Kong's security plugins**:
 - [OIDC](https://docs.konghq.com/hub/kong-inc/openid-connect/)
@@ -16,11 +16,11 @@ The plugin `x-custom-jwt` doesn't check the validity of the input itself (neithe
 |:------------------------------|:----------------|:-----------------------------------------------------------|
 |config.apikey_header|apikey|The Http header name to get the `apiKey` for Key Authentication|
 |config.bearer_clientid_claim|clientId|The claim name to extract the `clientId` (from a JWT) for Authentication Bearer|
-|config.custom_jwt_header|X-Custom-Jwt|The Http header name where to drop the new JWT. It overrides any existing value. If the value is `Authorization` the `Bearer` type is added in the value|
+|config.custom_jwt_header|X-Custom-Jwt|The Http header name where to drop the custom JWT. It overrides any existing value. If the value is `Authorization` the `Bearer` type is added in the value|
 |config.expires_in|1800|Number of seconds for the `exp` (expiration) claim and added to the current time|
-|config.iss|https://kong-gateway:8443/x-custom-jwt|The `iss` (issuer) claim that identifies Kong Gateway that issued the new JWT|
+|config.iss|https://kong-gateway:8443/x-custom-jwt|The `iss` (issuer) claim that identifies the Kong Gateway that issued the custom JWT|
 |config.jku|https://kong-gateway:8443/x-custom-jwt/jwks|The `jku` (JWK set Url) that points to a Kong Gateway route for delivering the well-known location of JWKs|
-|config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}|The JWK private key to sign the new JWT. The format is JSON|
+|config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}|The JWK private key to sign the custom JWT. The format is JSON|
 |config.verbose|false|Append to the Consumer a detailed message in case of error|
 
 ## High level algorithm to craft and sign the `x-custom-jwt`
@@ -84,8 +84,8 @@ x-custom-jwt.payload.act.client_id = "<kong-consumer-custom-id>" or "<kong-consu
 -- Sign the JWT with a private JWK (set in the plugin configuration) for building a JWS 
 jws_x_custom_jwt = jwt:sign (x-custom-jwt, private_jwk)
 
--- Add the new JWT in an HTTP header to the request's headers before sending the request to the Backend API
-kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
+-- Add the custom JWT in an HTTP header to the request's headers before sending the request to the Backend API
+kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
 ```
 ## How to test the `x-custom-jwt` plugin with Kong Gateway
 ### Prerequisites 
