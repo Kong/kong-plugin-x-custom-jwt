@@ -1,8 +1,8 @@
 # Kong plugin | `x-custom-jwt`: craft a custom JWT and sign it for building a JWS
-1) Craft a custom JWT called `x-custom-jwt`
+1) Craft a custom JWT
 2) Load the private JWK from the plugin's configuration and convert it into a PEM format
 3) Sign the JWT with the PEM string for building a JWS (RS256 algorithm)
-4) Add the `x-custom-jwt` to an HTTP Request Header backend API
+4) Add the new JWT to an HTTP Request Header backend API
 
 The plugin `x-custom-jwt` doesn't check the validity of the input itself (neither checking of JWT signature & JWT expiration, nor user/password checking, nor checking Client TLS checking, nor api key checking). So it's **mandatory to use this plugin in conjunction with one of the Kong security plugins**:
 - [OIDC](https://docs.konghq.com/hub/kong-inc/openid-connect/)
