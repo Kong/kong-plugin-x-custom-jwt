@@ -4,7 +4,7 @@
 3) Sign the JWT with the PEM string for building a JWS (RS256 algorithm)
 4) Add the new JWT to an HTTP Request Header backend API
 
-The plugin `x-custom-jwt` doesn't check the validity of the input itself (neither checking of JWT signature & JWT expiration, nor user/password checking, nor checking Client TLS checking, nor api key checking). So it's **mandatory to use this plugin in conjunction with one of the Kong security plugins**:
+The plugin `x-custom-jwt` doesn't check the validity of the input itself (neither checking of JWT signature & JWT expiration, nor user/password checking, nor checking Client TLS checking, nor api key checking). So it's **mandatory to use this plugin in conjunction with one of the Kong's security plugins**:
 - [OIDC](https://docs.konghq.com/hub/kong-inc/openid-connect/)
 - [JWT validation](https://docs.konghq.com/hub/kong-inc/jwt/)
 - [Basic Authentication](https://docs.konghq.com/hub/kong-inc/basic-auth/)
@@ -229,40 +229,44 @@ In this repo, there is the [decK configuration](./decK/konnect.yaml) related to 
 - name=`basicAuth`
 - path=`/basicAuth`
 3) Add `Basic Authentication` plugin to the Route (Leave default parameters)
-4) Open the `contact@konghq.com` consumer, go on credentials, click on a `+ New Basic Auth Credential` and put:
-- username=`my-auth`
+4) Open the `contact@konghq.com` consumer, go on Credentials / Basic Authentication, click on a `+ New Basic Auth Credential` and put:
+- username=`my-user`
 - password=`My p@ssword!`
 5) Click on save
 6) Test
 - `Request`:
 
   ```shell
-  http -a 'my-auth:My p@ssword!' :8000/basicAuth
+  http -a 'my-user:My p@ssword!' :8000/basicAuth
   ```
 - `Response`: expected value of `x-custom-jwt` plugin:
-
-  ```json
-  {
-    "header": {
-      "typ": "JWT",
-      "alg": "RS256",
-      "kid": "kong",
-      "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
-    },
-    "payload": {
-      "act": {
-        "client_id": "my-auth-username-ID"
+    * Base64 encoded:
+    ```
+    eyJhbGciOiJSUzI1NiIsImprdSI6Imh0dHBzOi8va29uZy1nYXRld2F5Ojg0NDMveC1jdXN0b20tand0L2p3a3MiLCJ0eXAiOiJKV1QiLCJraWQiOiJrb25nIn0.eyJjbGllbnRfaWQiOiJteS11c2VyIiwiaWF0IjoxNzEyNzY3MTM2LCJhY3QiOnsiY2xpZW50X2lkIjoiY29udGFjdEBrb25naHEuY29tLUlEMSJ9LCJqdGkiOiI5MjAyNjhmOC05MzFlLTRkMjYtODUyMi1jNmJhMGJhMjkzY2IiLCJleHAiOjE3MTI3Njg5MzYsImlzcyI6Imh0dHBzOi8va29uZy1nYXRld2F5Ojg0NDMveC1jdXN0b20tand0IiwiYXVkIjoiaHR0cDovL2h0dHBiaW4uYXBpbS5ldS9hbnl0aGluZyJ9.N0g0hkUCbFuaccJS32TQJI02wIbMwC1Qj8UnaVbYahokfCulGZkPP9rwmSy73PYJM2vab6PLoqeKQ7XqUIUtIMSuvNS4W6fcEO1ilVt_2LQyqYFR3NDIRLjVf3_LyGWcExsxceon-8LGfrZN817GlLG5XbHzIXZXPDsdiAca_nnZgFaWK7BChF4IOpym7clHD4c6Uh0XDLEkgLzinZLRGm-PTy4REKq7yF3V913aMrS-gMaSDJbpGk6TWGEKERKoyGxvN8y2vH0y-6TA-XVWUM8U3Vdg-wjczlEbMXmlvFdVc2hRAsrjgb19vph4LH2NkvauZdBsP7UBXhz2dKWNkw
+    ```
+    * JSON decoded:
+    ```json
+    {
+      "header": {
+        "typ": "JWT",
+        "alg": "RS256",
+        "kid": "kong",
+        "jku": "https://kong-gateway:8443/x-custom-jwt/jwks"
       },
-      "jti": "08e1f9e0-7cb7-4fb3-9d9a-1de487af3a03",
-      "iss": "https://kong-gateway:8443/x-custom-jwt",
-      "aud": "http://httpbin.apim.eu/anything",
-      "iat": 1712585199,
-      "exp": 1712586999,
-      "client_id": "012345AZERTY!"
-    },
-    "signature": "xxxxx"
-  }
-  ```
+      "payload": {
+        "client_id": "my-user",
+        "iat": 1712767136,
+        "act": {
+          "client_id": "contact@konghq.com-ID1"
+        },
+        "jti": "920268f8-931e-4d26-8522-c6ba0ba293cb",
+        "exp": 1712768936,
+        "iss": "https://kong-gateway:8443/x-custom-jwt",
+        "aud": "http://httpbin.apim.eu/anything"
+      },
+      "signature": "xxxxx"
+    }
+    ```
 ### Example #3: "mTLS Client Certificate" input
 1) Create a CA Certificate: open Certificates page and click `New CA Certficate`
 - Copy/paste the content of `./mTLS/ca.cert.pem` in the CA field
