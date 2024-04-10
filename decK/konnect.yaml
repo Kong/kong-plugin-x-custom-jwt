@@ -43,7 +43,10 @@ ca_certificates:
   cert_digest: 3721c25bd711e8847e89c61cc97e004144a0e1b5b32217936bab0e059df77ec6
   id: 7b9af8ff-b16c-45f0-9c87-766d20b1dc2e
 consumers:
-- custom_id: contact@konghq.com-ID1
+- basicauth_credentials:
+  - password: c2d7972b3d22e57398c65cd9b44529426024cb1f
+    username: my-user
+  custom_id: contact@konghq.com-ID1
   keyauth_credentials:
   - key: 012345AZERTY!
   username: contact@konghq.com
@@ -114,6 +117,7 @@ services:
   - config:
       apikey_header: apikey
       bearer_clientid_claim: clientId
+      custom_jwt_header: X-Custom-Jwt
       expires_in: 1800
       iss: https://kong-gateway:8443/x-custom-jwt
       jku: https://kong-gateway:8443/x-custom-jwt/jwks
@@ -155,6 +159,33 @@ services:
         run_on_preflight: true
       enabled: true
       name: key-auth
+      protocols:
+      - grpc
+      - grpcs
+      - http
+      - https
+      - ws
+      - wss
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  - https_redirect_status_code: 426
+    name: basicAuth
+    path_handling: v0
+    paths:
+    - /basicAuth
+    plugins:
+    - config:
+        anonymous: null
+        hide_credentials: false
+        realm: service
+      enabled: true
+      name: basic-auth
       protocols:
       - grpc
       - grpcs
@@ -279,7 +310,7 @@ services:
         - kong
         client_jwk: null
         client_secret:
-        - ABCDEFGHIJKLMNOP12345
+        - VdMh4tbVTSlM6WFaQzEFYj4DR4r7BaKf
         consumer_by:
         - username
         - custom_id
@@ -340,7 +371,7 @@ services:
         introspection_post_args_names: null
         introspection_post_args_values: null
         introspection_token_param_name: token
-        issuer: http://localhost:8000/.well-known/openid-configuration
+        issuer: https://sso.apim.eu:8443/auth/realms/Jerome/.well-known/openid-configuration
         issuers_allowed: null
         jwt_session_claim: sid
         jwt_session_cookie: null
