@@ -82,10 +82,9 @@ x-custom-jwt.payload.jti = "<uuid>" -- Generation of a 'Universally unique ident
 x-custom-jwt.payload.act.client_id = "<kong-consumer-custom-id>" or "<kong-consumer-id>" -- Set by security plugins (OIDC, Basic Auth, Key Authentication, Mutual TLS Auth, etc.)
 
 -- Sign the JWT with a private JWK (set in the plugin configuration) for building a JWS 
-jws_x_custom_jwt = jwt:sign (x-custom-jwt, private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}"|The private JWK key to sign the new JWT. The format is JSON|
-|verbose|false|Append to the Consumer a detailed message in case of error|
+jws_x_custom_jwt = jwt:sign (x-custom-jwt, private_jwk)
 
--- Add the 'x-custom-jwt' header to the request's headers before sending the request to the Backend API
+-- Add the new JWT in an HTTP header to the request's headers before sending the request to the Backend API
 kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 ```
 ## How to test the `x-custom-jwt` plugin with Kong Gateway
