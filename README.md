@@ -1,5 +1,5 @@
 # Kong plugin | `x-custom-jwt`: craft a custom JWT and sign it for building a JWS
-1) Craft a custom JWT
+1) Craft a new and custom JWT
 2) Load the private JWK from the plugin's configuration and convert it into a PEM format
 3) Sign the JWT with the PEM string for building a JWS (RS256 algorithm)
 4) Add the new JWT to an HTTP Request Header backend API
