@@ -79,7 +79,7 @@ x-custom-jwt.payload.aud = "<url>" -- the Backend_Api URL
 x-custom-jwt.payload.jti = "<uuid>" -- Generation of a 'Universally unique identifier'
 
 -- 'act.sub' claim
-x-custom-jwt.payload.act.client_id = "<kong-consumer-custom-id>" or " "<kong-consumer-id>" -- Set by security plugins (OIDC, Basic Auth, Key Authentication, Mutual TLS Auth, etc.)
+x-custom-jwt.payload.act.client_id = "<kong-consumer-custom-id>" or "<kong-consumer-id>" -- Set by security plugins (OIDC, Basic Auth, Key Authentication, Mutual TLS Auth, etc.)
 
 -- Sign the JWT with a private JWK (set in the plugin configuration) for building a JWS 
 jws_x_custom_jwt = jwt:sign (x-custom-jwt, private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}"|The private JWK key to sign the new JWT. The format is JSON|
