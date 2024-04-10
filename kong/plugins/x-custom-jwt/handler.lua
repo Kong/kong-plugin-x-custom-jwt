@@ -331,11 +331,15 @@ function xCustomJWT:access(plugin_conf)
   if errFunc.ErrorMessage then
     return kong.response.exit(401, errFunc,  {["Content-Type"] = "application/json"})
   end
-  
-  -- Add the JWT to a 'x-custom-jwt' HTTP Header
-  kong.service.request.set_header("x-custom-jwt", crafted_x_custom_jwt)
-  
-  kong.log.notice("JWT has been crafted: x-custom-jwt: " .. crafted_x_custom_jwt)
+  -- If HTTP Header is 'Authorization' we add the 'Bearer' type
+  if plugin_conf.custom_jwt_header == "Authorization" then
+    crafted_x_custom_jwt = 'Bearer ' .. crafted_x_custom_jwt
+  end
+  -- Set the new JWT to an HTTP Header (potentially overwrite the existing header)
+  kong.service.request.set_header(plugin_conf.custom_jwt_header, crafted_x_custom_jwt)
+  kong.log.notice("JWT successfully crafted and added to '" .. 
+                  plugin_conf.custom_jwt_header .. "' header: " .. 
+                  crafted_x_custom_jwt)
 
 end
 

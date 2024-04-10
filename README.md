@@ -2,14 +2,26 @@
 1) Craft a custom JWT called `x-custom-jwt`
 2) Load the private JWK from the plugin's configuration and convert it into a PEM format
 3) Sign the JWT with the PEM string for building a JWS (RS256 algorithm)
-4) Add the 'x-custom-jwt' to an HTTP Request Header backend API
+4) Add the `x-custom-jwt` to an HTTP Request Header backend API
 
-The plugin `x-custom-jwt` doesn't check the validity of the input itself (neither checking of JWT signature & JWT expiration, nor user/password checking, nor checking Client TLS checking, nor api key checking). So it's **mandatory to use this plugin in conjunction with Kong security plugins**:
+The plugin `x-custom-jwt` doesn't check the validity of the input itself (neither checking of JWT signature & JWT expiration, nor user/password checking, nor checking Client TLS checking, nor api key checking). So it's **mandatory to use this plugin in conjunction with one of the Kong security plugins**:
 - [OIDC](https://docs.konghq.com/hub/kong-inc/openid-connect/)
 - [JWT validation](https://docs.konghq.com/hub/kong-inc/jwt/)
 - [Basic Authentication](https://docs.konghq.com/hub/kong-inc/basic-auth/)
 - [Mutual TLS Authentication](https://docs.konghq.com/hub/kong-inc/mtls-auth/)
 - [Key Authentication](https://docs.konghq.com/hub/kong-inc/key-auth/)
+
+## `x-custom-jwt` configuration reference
+|FORM PARAMETER                 |DEFAULT          |DESCRIPTION                                                 |
+|:------------------------------|:----------------|:-----------------------------------------------------------|
+|config.apikey_header|apikey|The Http header name to get the `apiKey` for Key Authentication|
+|config.bearer_clientid_claim|clientId|The claim name to extract the `clientId` (from a JWT) for Authentication Bearer|
+|custom_jwt_header|X-Custom-Jwt|The Http header name where to drop the new JWT. It overrides any existing value. If the value is `Authorization` the `Bearer` type is added in the value|
+|expires_in|1800|Number of seconds for the `exp` (expiration) claim and added to the current time|
+|iss|https://kong-gateway:8443/x-custom-jwt|The `iss` (issuer) claim that identifies the principal that issued the new JWT|
+|jku|https://kong-gateway:8443/x-custom-jwt/jwks|The `jku` (JWK set Url) points to a well-known location where the set of JWKs is stored|
+|private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}|The private JWK key to sign the new JWT. The format is JSON|
+|verbose|false|Append to the Consumer a detailed message in case of error|
 
 ## High level algorithm to craft and sign the `x-custom-jwt`
 ```lua
@@ -70,7 +82,8 @@ x-custom-jwt.payload.jti = "<uuid>" -- Generation of a 'Universally unique ident
 x-custom-jwt.payload.act.client_id = "<kong-consumer-custom-id>" or " "<kong-consumer-id>" -- Set by security plugins (OIDC, Basic Auth, Key Authentication, Mutual TLS Auth, etc.)
 
 -- Sign the JWT with a private JWK (set in the plugin configuration) for building a JWS 
-jws_x_custom_jwt = jwt:sign (x-custom-jwt, private_jwk)
+jws_x_custom_jwt = jwt:sign (x-custom-jwt, private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}"|The private JWK key to sign the new JWT. The format is JSON|
+|verbose|false|Append to the Consumer a detailed message in case of error|
 
 -- Add the 'x-custom-jwt' header to the request's headers before sending the request to the Backend API
 kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
@@ -78,7 +91,7 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
 ## How to test the `x-custom-jwt` plugin with Kong Gateway
 ### Prerequisites 
 
-1) install the [Kong Gateway](https://docs.konghq.com/gateway/latest/install/)
+1) Install the [Kong Gateway](https://docs.konghq.com/gateway/latest/install/)
 2) Install [http.ie](https://httpie.io/)
 3) Prepare the JWK for getting the Public and Private Keypair
 - You can use the JWK keypair provided in this repo:
@@ -126,8 +139,10 @@ kong.service.request.set_header("x-custom-jwt", jws_x_custom_jwt)
   - config.bearer_clientid_claim=`clientId` or `** Replace with the right claim for having the proper Kong consumer reconciliation **`
   - config.iss=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt)
   - config.jku=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt/jwks)
-  - config.private_jwk=copy/paste the content of `./test-keys/jwk-private.json` **Or**
-  - config.private_jwk=paste the `Public and Private Keypair` from https://mkjwk.org/. If needed, adapt the `kid` to a custom value; the `kid` value must be the same as defined in `Prerequisites` heading (see the configuration of `Request Termination` plugin)
+  - config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}"=copy/paste the content of `./test-keys/jwk-private.json` **Or*|The private JWK key to sign the new JWT. The format is JSON|
+  |verbose|false|Append to the Consumer a detailed message in case of error|
+  - config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}"=paste the `Public and Private Keypair` from https://mkjwk.org/. If needed, adapt the `kid`|The private JWK key to sign the new JWT. The format is JSON|
+  |verbose|false|Append to the Consumer a detailed message in case of errorto a custom value; the `kid` value must be the same as defined in `Prerequisites` heading |(see the configuration of `Request Termination` plugin)
 6) Create a Consumer with:
 - Username=`contact@konghq.com`
 - Custom Id=`contact@konghq.com-ID1`
