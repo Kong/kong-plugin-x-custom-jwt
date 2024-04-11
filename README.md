@@ -67,7 +67,7 @@ end
 
 -- Header values for all Authentication methods
 x-custom-jwt.header.typ = "JWT",
-x-custom-jwt.header.alg = "HS256",
+x-custom-jwt.header.alg = "RS256",
 x-custom-jwt.header.kid = "<JWK.kid>", -- Got from the kid of private JWK
 x-custom-jwt.header.jku = "<jku>" -- Got from the plugin Configuration
 
