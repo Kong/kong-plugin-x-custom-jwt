@@ -91,8 +91,9 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
 ### Prerequisites 
 
 1) Install the [Kong Gateway](https://docs.konghq.com/gateway/latest/install/)
-2) Install [http.ie](https://httpie.io/)
-3) Prepare the JWK for getting the Public and Private Keypair
+2) Install the `x-custom-jwt` plugin by following the documentation, [here](https://docs.konghq.com/gateway/latest/plugin-development/file-structure/)
+3) Install [http.ie](https://httpie.io/)
+4) Prepare the JWK for getting the Public and Private Keypair
 - You can use the JWK keypair provided in this repo:
   - JWKS (JSON Web Key Set) Public Key: `./test-keys/jwks-public.json`
   - JWK Private Key: `./test-keys/jwk-private.json`
@@ -102,7 +103,7 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
   - Algorithm: `RS256`
   - Key-ID: `SHA-256`
 - Click on Generate, copy to clipboard the `Public and Private Keypair` (i.e. Private Key) and the `Public Key`
-4) Create a Route to deliver the public JWKS
+5) Create a Route to deliver the public JWKS
 - The Route has the following properties:
   - name=`x-custom-jwt-jwks`
   - path=`/x-custom-jwt/jwks`
@@ -125,7 +126,7 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
 - Add the `CORS` plugin to the Route with:
   - config.origins=`*`
   - Click on `Save`
-5) Create a Gateway Service
+6) Create a Gateway Service
 - For `httpbin` service, add a Gateway Service with:
   - name=`httpbin`
   - URL=`http://httpbin.apim.eu/anything` 
@@ -141,10 +142,10 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
   - config.private_jwk=copy/paste the content of `./test-keys/jwk-private.json` **Or**
   - config.private_jwk=paste the `Public and Private Keypair` from https://mkjwk.org/. If needed, adapt the `kid` to a custom value; the `kid` value must be the same as defined in `Prerequisites` heading (see the configuration of `Request Termination` plugin)
   - config.verbose=`true`
-6) Create a Consumer with:
+7) Create a Consumer with:
 - Username=`contact@konghq.com`
 - Custom Id=`contact@konghq.com-ID1`
-7) Create a `contact@konghq.com` Client in your IdP Server for Example #1
+8) Create a `contact@konghq.com` Client in your IdP Server for Example #1
 
 In this repo, there is the [decK configuration](./decK/konnect.yaml) related to the prerequisites and following examples
 
