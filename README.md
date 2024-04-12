@@ -138,10 +138,9 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
   - config.bearer_clientid_claim=`clientId` or `** Replace with the right claim for having the proper Kong consumer reconciliation **`
   - config.iss=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt)
   - config.jku=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt/jwks)
-  - config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}"=copy/paste the content of `./test-keys/jwk-private.json` **Or*|The private JWK key to sign the new JWT. The format is JSON|
-  |verbose|false|Append to the Consumer a detailed message in case of error|
-  - config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}"=paste the `Public and Private Keypair` from https://mkjwk.org/. If needed, adapt the `kid`|The private JWK key to sign the new JWT. The format is JSON|
-  |verbose|false|Append to the Consumer a detailed message in case of errorto a custom value; the `kid` value must be the same as defined in `Prerequisites` heading |(see the configuration of `Request Termination` plugin)
+  - config.private_jwk=copy/paste the content of `./test-keys/jwk-private.json` **Or**
+  - config.private_jwk=paste the `Public and Private Keypair` from https://mkjwk.org/. If needed, adapt the `kid` to a custom value; the `kid` value must be the same as defined in `Prerequisites` heading (see the configuration of `Request Termination` plugin)
+  - config.verbose=`true`
 6) Create a Consumer with:
 - Username=`contact@konghq.com`
 - Custom Id=`contact@konghq.com-ID1`
