@@ -23,7 +23,7 @@ The plugin `x-custom-jwt` doesn't check the validity of the input itself (neithe
 |config.private_jwk|{"kty": "RSA","kid": "kong",...<***CHANGE_ME***>}|The JWK private key to sign the custom JWT. The format is JSON|
 |config.verbose|false|Append to the Consumer a detailed message in case of error|
 
-## High level algorithm to craft and sign the `x-custom-jwt`
+## High level algorithm of `x-custom-jwt` to craft and sign a custom JWT
 ```lua
 -- Try to find one by one an Authentication given by the Consumer
 find "Authorization: Bearer" header
