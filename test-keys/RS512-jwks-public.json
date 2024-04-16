@@ -1,0 +1,12 @@
+{
+    "keys": [
+        {
+            "kty": "RSA",
+            "e": "AQAB",
+            "use": "sig",
+            "kid": "kong-rs512",
+            "alg": "RS512",
+            "n": "qh7e58nNsanJUXr3e_vLpoCorPQOeex5bdND2NSV99Rav6J6eC3T2Iyl7HTGWNTw54uf27gjcd7UCxWjMJSc4323ACMXZwy2S0K2rl-YtxwF6umcJTI_--qGl0LK6-y7D5-aMN5_HPyFWECdVmk4tTGWFC3UAL2OzR8L-iL5htc-hGXboUIu1Zp7hfTQkcPfM9T1V_P14gakdDzCD8ep1CusN5XB8nBTnUKF-fHnjjmvjFVAI3GWWOdRW2X4v6o-FW4ng_6RnyuSuVoOraetu6KJ3R8HwMWVrrTMxCvIEZs62RXBVaat6u3VaoQ6PrkWCqjQ-IJojGa0qEafgCpBdw"
+        }
+    ]
+  }

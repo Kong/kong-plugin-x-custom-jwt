@@ -5,32 +5,109 @@ local xCustomJWT = {
 
 local genericErrMsg = "You are not authorized to access to this service"
 
+local function dump(o)
+  if type(o) == 'table' then
+     local s = '{ '
+     for k,v in pairs(o) do
+        if type(k) ~= 'number' then k = '"'..k..'"' end
+        s = s .. '['..k..'] = ' .. dump(v) .. ','
+     end
+     return s .. '} '
+  else
+     return tostring(o)
+  end
+end
+
+
 ---------------------------------------------------------------------------------------------------
 -- Craft the JWT 'x-custom-jwt' and Sign it having a JWS
 ---------------------------------------------------------------------------------------------------
 local function jwtCrafterSigner(data, plugin_conf)
   
-  local jwt   = require "resty.jwt"
+  local jwt   = require("resty.jwt")
   local pkey  = require("resty.openssl.pkey")
-  local json  = require('cjson')
+  local json  = require("cjson")
   local errFunc = {}
   local verboseMsg
   local signingKey
+  local pk
+  local err
+  local ok
+  local privateJwkJson
+  local jwt_token
   
+  --local jws        = require "kong.openid-connect.jws"
+  --local signed_token
+  --kong.log.notice("** jerome jws.encode")
+  --signed_token, err = jws.encode({
+  --        payload = data,
+  --        jwk     = plugin_conf.private_jwk,
+  --      })
+  --if not signed_token then
+  --  verboseMsg = "invalid_token " .. err
+  --end
+  --kong.log.notice("** Jerome: signed_token: " .. signed_token)
+
+  -- Convert Private Key to JSON
+  ok, privateJwkJson = pcall(json.decode, plugin_conf.private_jwk)
+  -- If there is an error during the JWT signature
+  if ok == false then
+    err = true
+    verboseMsg = "Unable to JSON decode the private key, error: '" .. privateJwkJson .. "'"
+  end
+
   -- Convert the private JWK key to a PEM format
-  local pk, err = pkey.new(plugin_conf.private_jwk, {formats = "JWK", type = "*"})
-  if err then
-    verboseMsg = "Unable to load the JWK, error: '" .. err .. "'"
-  else
-    signingKey, err = pk:tostring("PrivateKey", "PEM", false)
-    if err then
-      verboseMsg = "Unable to output the JWK key to PEM format, error: '" .. err .. "'"
+  if not err then
+    if privateJwkJson.alg == 'RS256' or privateJwkJson.alg == 'RS512' or privateJwkJson.alg == 'ES256' then
+      pk, err = pkey.new(plugin_conf.private_jwk, {formats = "JWK", type = "*"})
+      if err then
+        verboseMsg = "Unable to load the JWK, error: '" .. err .. "'"
+      else
+        signingKey, err = pk:tostring("PrivateKey", "PEM", false)
+        if err then
+          verboseMsg = "Unable to output the JWK key to PEM format, error: '" .. err .. "'"
+        else
+          kong.log.notice("RSA - JWK converted to PEM: " .. signingKey)
+        end
+      end
+    elseif privateJwkJson.alg == 'HS256' or privateJwkJson.alg == 'HS512' then
+      signingKey = privateJwkJson.k
+      kong.log.notice("HMAC - JWK key: " .. signingKey)
     else
-      kong.log.debug("JWK converted to PEM: " .. signingKey)
+      err = true
+      local alg = privateJwkJson.alg or ''
+      verboseMsg = "Unknown algorithm '" .. alg .. "'"
+    end
+  end
+
+  if not err then
+    local jwt_obj = {}
+    jwt_obj.header = {
+      typ = "JWT",
+      alg = privateJwkJson.alg,
+      kid = privateJwkJson.kid,
+      jku = plugin_conf.jku
+    }
+    jwt_obj.payload = data
+
+    -- Sign the JWT for having a JWS
+    ok, jwt_token = pcall(jwt.sign, self, signingKey, jwt_obj)
+
+    -- If there is an error during the JWT signature
+    if ok == false then
+      err = true
+      
+      if jwt_token and jwt_token.reason then
+        verboseMsg = jwt_token.reason
+      elseif jwt_token then
+        verboseMsg = jwt_token
+      else
+        verboseMsg = "Unknown JWT signature error"
+      end
     end
   end
   -- If there is an error on JWK to PEM conversion
-  if verboseMsg then
+  if err then
     kong.log.err (verboseMsg)
     errFunc.ErrorMessage = genericErrMsg
     if plugin_conf.verbose then
@@ -38,24 +115,6 @@ local function jwtCrafterSigner(data, plugin_conf)
     end
     return nil, errFunc
   end
-  
-  -- Convert Private Key to JSON to get the 'kid'
-  local privateJwkJson = json.decode(plugin_conf.private_jwk)
-
-  -- Sign the JWT and build a JWS
-  local jwt_token = jwt:sign(
-    signingKey,
-    {
-      header = {
-        typ = "JWT",
-        alg = "RS256",
-        kid = privateJwkJson.kid,
-        jku = plugin_conf.jku
-      },
-      payload = data
-    }
-  )
-
   return jwt_token, errFunc
 
 end
@@ -91,23 +150,23 @@ end
 end
 
 ---------------------------------------------------------------------------------------------------
--- GURN / certificate
+-- Subject Distinguished Names / certificate
 ---------------------------------------------------------------------------------------------------
-local function extract_gurn(cert)
+local function extract_subjectDN(cert)
   local err = nil
-  local gurn = nil
+  local rc = nil
   local openssl = require("resty.openssl.x509")
 
   local crt, err = openssl.new(cert,"PEM")
   if err then
-    return gurn, err
+    return rc, err
   end
 
   -- Code processing the 'Subject'
   -- Subject example: C=WD, ST=Earth, O=Kong Inc., OU=Solution Engineering, CN=apim.eu/emailAddress=demo@apim.eu
   local subj, err = crt:get_subject_name()
   if err then
-    return gurn, err
+    return rc, err
   end
   
   -- Get all values from Subject
@@ -118,11 +177,11 @@ local function extract_gurn(cert)
     end
     subjectDN = subjectDN .. key.. "=" .. value.blob
   end
-  gurn = subjectDN
+  rc = subjectDN
   
-  kong.log.debug("GURN: '" .. gurn .. "'")
+  kong.log.notice("subjectDN: '" .. rc .. "'")
   
-  return gurn, err
+  return rc, err
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -145,27 +204,27 @@ local function prepareJwtPayload(plugin_conf)
   
   -- If we found an Authorization Header
   if authorization_header ~= nil then
-    kong.log.debug("'Authorization' header found='" .. authorization_header .. "'")
+    kong.log.notice("'Authorization' header found='" .. authorization_header .. "'")
     -- Try to find an 'Authorization: Bearer'
     entries = utils.split(authorization_header, "Bearer ")
     if #entries == 2 then
       bearer_token = entries[2]
-      kong.log.debug("Authenticated Token retrieved successfully: " .. bearer_token)
+      kong.log.notice("Authenticated Token retrieved successfully: " .. bearer_token)
     else
-      kong.log.debug("There is no 'Authorization: Bearer' header")
+      kong.log.notice("There is no 'Authorization: Bearer' header")
     end
     -- if 'Bearer' auth is not found, Try to find a 'Basic' auth
     if bearer_token == nil then
       entries = utils.split(authorization_header, "Basic ")
       if #entries == 2 then
         basic_authorization = entries[2]
-        kong.log.debug("Basic Authorization retrieved successfully: " .. basic_authorization)
+        kong.log.notice("Basic Authorization retrieved successfully: " .. basic_authorization)
       else
-        kong.log.debug("There is no 'Authorization: Basic' header")
+        kong.log.notice("There is no 'Authorization: Basic' header")
       end
     end
   else
-    kong.log.debug("There is no 'Authorization' header")
+    kong.log.notice("There is no 'Authorization' header")
   end
 
   -- If there is no Authorization header (nor Bearer nor Basic), try to extract subjectDN from mutual TLS
@@ -173,24 +232,24 @@ local function prepareJwtPayload(plugin_conf)
     local cert, err = kong.client.tls.get_full_client_certificate_chain()
     if not err then
       if cert then
-        kong.log.debug("Mutual TLS found | cert: " .. cert)
+        kong.log.notice("Mutual TLS found | cert: " .. cert)
       else
-        kong.log.debug("No mutual TLS")
+        kong.log.notice("No mutual TLS")
       end
     else
-      kong.log.debug("get_full_client_certificate_chain, err: " .. err)
+      kong.log.notice("get_full_client_certificate_chain, err: " .. err)
     end
 
     if cert then
       local err
-      subjectDN, err = extract_gurn(cert)
+      subjectDN, err = extract_subjectDN(cert)
       if not err then
-        kong.log.debug("subjectDN: '" .. subjectDN .. "'")
+        kong.log.notice("subjectDN: '" .. subjectDN .. "'")
       else
         verboseMsg = "subjectDN extraction: " .. err
       end
     else
-      kong.log.debug("There is no 'Client Certificate'")
+      kong.log.notice("There is no 'Client Certificate'")
     end
   end
 
@@ -198,7 +257,7 @@ local function prepareJwtPayload(plugin_conf)
   if not bearer_token and not basic_authorization and not subjectDN and not verboseMsg then
     api_key = kong.request.get_header (plugin_conf.apikey_header)
     if not api_key then
-      kong.log.debug("There is no '" .. plugin_conf.apikey_header .. "' header")
+      kong.log.notice("There is no '" .. plugin_conf.apikey_header .. "' header")
     end
   end
   
@@ -254,10 +313,26 @@ local function prepareJwtPayload(plugin_conf)
     data.client_id = api_key
   end
 
+  -- Get the entity of the currently authenticated Consumer (set by the Kong securiy plugins)
+  if not verboseMsg then
+    local consumer = kong.client.get_consumer()
+    if consumer then
+      local act_client_id = consumer.custom_id or consumer.id
+      kong.log.notice("Kong consumer retrieved successfully: '" .. act_client_id .. "'")
+      if not data.act then
+        -- Initialize the 'act' table
+        data.act = {}
+      end
+      data.act.client_id = act_client_id
+    else
+      verboseMsg = "There is no Kong consumer credential"
+    end
+  end
+  
   -- If there is a pending error or If we failed to get 'client_id' we reject the request
   if verboseMsg or not data.client_id then
     errFunc.ErrorMessage = genericErrMsg
-    local VerboseMessage = "The 'client_id' is not set"
+    local VerboseMessage = "Issue with 'client_id' claim retrieval or Kong Consumer"
     if verboseMsg then
       VerboseMessage = VerboseMessage .. ". " .. verboseMsg
     end
@@ -277,8 +352,8 @@ local function prepareJwtPayload(plugin_conf)
   -- Get API backend URL
   local service = kong.router.get_service()
   local service_port = ""
-  -- If the API backend URL doesn't use the default ports (80 or 443) we explicitly add it
-  if tostring(service.port) ~= '80'  and tostring(service.port) ~= '443' then
+  -- If the API backend URL doesn't use the default port (80 or 443) we explicitly add it
+  if tostring(service.port) ~= '80' and tostring(service.port) ~= '443' then
     service_port = ":" .. service.port
   end
   
@@ -288,20 +363,6 @@ local function prepareJwtPayload(plugin_conf)
   end
   data.aud = service.protocol .. "://" .. service.host .. service_port .. path
   data.jti = utils.uuid()
-
-  -- Get the entity of the currently authenticated Consumer (set by the Kong securiy plugins)
-  local consumer = kong.client.get_consumer()
-  if consumer then
-    local act_client_id = consumer.custom_id or consumer.id
-    kong.log.debug("Kong consumer retrieved successfully: '" .. act_client_id .. "'")
-    if not data.act then
-      -- Initialize the 'act' table
-      data.act = {}
-    end
-    data.act.client_id = act_client_id
-  else
-    kong.log.debug("There is no Kong consumer credential")
-  end
 
   return data, errFunc
 end
@@ -316,7 +377,7 @@ function xCustomJWT:access(plugin_conf)
   -- Get the Authentication and Prepare the JWT payload
   local data, errFunc = prepareJwtPayload(plugin_conf)
   if not errFunc.ErrorMessage then
-    -- Craft the JWT and Sign it having a JWS
+    -- Sign the JWT for having a JWS
     crafted_x_custom_jwt, errFunc = jwtCrafterSigner(data, plugin_conf)
   end
 
@@ -330,7 +391,7 @@ function xCustomJWT:access(plugin_conf)
   end
   -- Set the new JWT to an HTTP Header (potentially overwrite the existing header)
   kong.service.request.set_header(plugin_conf.custom_jwt_header, crafted_x_custom_jwt)
-  kong.log.debug("JWT successfully crafted and added to '" .. 
+  kong.log.notice("JWT successfully crafted and added to '" .. 
                   plugin_conf.custom_jwt_header .. "' header: " .. 
                   crafted_x_custom_jwt)
 

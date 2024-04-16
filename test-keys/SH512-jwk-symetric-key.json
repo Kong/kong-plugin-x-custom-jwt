@@ -1,0 +1,6 @@
+{ 
+    "kty" : "oct",
+    "kid" : "kong-sh512",
+    "alg" : "HS512",
+    "k" : "kjnjkUKIYHZBKJN.?%M%mA?JJIJK?NLKnkjJKHJBBNBHJjhbhjkj0-)N?N??N2ab"
+  }

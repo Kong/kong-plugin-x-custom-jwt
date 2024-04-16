@@ -1,0 +1,6 @@
+{ 
+    "kty" : "oct", 
+    "kid" : "kong-sh256",
+    "alg" : "HS256", 
+    "k" : "KJNJKBSbJ87y23jHb?SNKLKLM?SIO*.S" 
+  }
