@@ -57,12 +57,12 @@ local function jwtCrafterSigner(data, plugin_conf)
         if err then
           verboseMsg = "Unable to output the JWK key to PEM format, error: '" .. err .. "'"
         else
-          kong.log.notice("RSA - JWK converted to PEM: " .. signingKey)
+          kong.log.debug("RSA - JWK converted to PEM: " .. signingKey)
         end
       end
     elseif privateJwkJson.alg == 'HS256' or privateJwkJson.alg == 'HS512' then
       signingKey = privateJwkJson.k
-      kong.log.notice("HMAC - JWK key: " .. signingKey)
+      kong.log.debug("HMAC - JWK key: " .. signingKey)
     else
       err = true
       local alg = privateJwkJson.alg or ''
@@ -169,7 +169,7 @@ local function extract_subjectDN(cert)
   end
   rc = subjectDN
   
-  kong.log.notice("subjectDN: '" .. rc .. "'")
+  kong.log.debug("subjectDN: '" .. rc .. "'")
   
   return rc, err
 end
@@ -194,27 +194,27 @@ local function prepareJwtPayload(plugin_conf)
   
   -- If we found an Authorization Header
   if authorization_header ~= nil then
-    kong.log.notice("'Authorization' header found='" .. authorization_header .. "'")
+    kong.log.debug("'Authorization' header found='" .. authorization_header .. "'")
     -- Try to find an 'Authorization: Bearer'
     entries = utils.split(authorization_header, "Bearer ")
     if #entries == 2 then
       bearer_token = entries[2]
-      kong.log.notice("Authenticated Token retrieved successfully: " .. bearer_token)
+      kong.log.debug("Authenticated Token retrieved successfully: " .. bearer_token)
     else
-      kong.log.notice("There is no 'Authorization: Bearer' header")
+      kong.log.debug("There is no 'Authorization: Bearer' header")
     end
     -- if 'Bearer' auth is not found, Try to find a 'Basic' auth
     if bearer_token == nil then
       entries = utils.split(authorization_header, "Basic ")
       if #entries == 2 then
         basic_authorization = entries[2]
-        kong.log.notice("Basic Authorization retrieved successfully: " .. basic_authorization)
+        kong.log.debug("Basic Authorization retrieved successfully: " .. basic_authorization)
       else
-        kong.log.notice("There is no 'Authorization: Basic' header")
+        kong.log.debug("There is no 'Authorization: Basic' header")
       end
     end
   else
-    kong.log.notice("There is no 'Authorization' header")
+    kong.log.debug("There is no 'Authorization' header")
   end
 
   -- If there is no Authorization header (nor Bearer nor Basic), try to extract subjectDN from mutual TLS
@@ -222,24 +222,24 @@ local function prepareJwtPayload(plugin_conf)
     local cert, err = kong.client.tls.get_full_client_certificate_chain()
     if not err then
       if cert then
-        kong.log.notice("Mutual TLS found | cert: " .. cert)
+        kong.log.debug("Mutual TLS found | cert: " .. cert)
       else
-        kong.log.notice("No mutual TLS")
+        kong.log.debug("No mutual TLS")
       end
     else
-      kong.log.notice("get_full_client_certificate_chain, err: " .. err)
+      kong.log.debug("get_full_client_certificate_chain, err: " .. err)
     end
 
     if cert then
       local err
       subjectDN, err = extract_subjectDN(cert)
       if not err then
-        kong.log.notice("subjectDN: '" .. subjectDN .. "'")
+        kong.log.debug("subjectDN: '" .. subjectDN .. "'")
       else
         verboseMsg = "subjectDN extraction: " .. err
       end
     else
-      kong.log.notice("There is no 'Client Certificate'")
+      kong.log.debug("There is no 'Client Certificate'")
     end
   end
 
@@ -247,7 +247,7 @@ local function prepareJwtPayload(plugin_conf)
   if not bearer_token and not basic_authorization and not subjectDN and not verboseMsg then
     api_key = kong.request.get_header (plugin_conf.apikey_header)
     if not api_key then
-      kong.log.notice("There is no '" .. plugin_conf.apikey_header .. "' header")
+      kong.log.debug("There is no '" .. plugin_conf.apikey_header .. "' header")
     end
   end
   
@@ -308,7 +308,7 @@ local function prepareJwtPayload(plugin_conf)
     local consumer = kong.client.get_consumer()
     if consumer then
       local act_client_id = consumer.custom_id or consumer.id
-      kong.log.notice("Kong consumer retrieved successfully: '" .. act_client_id .. "'")
+      kong.log.debug("Kong consumer retrieved successfully: '" .. act_client_id .. "'")
       if not data.act then
         -- Initialize the 'act' table
         data.act = {}
@@ -381,7 +381,7 @@ function xCustomJWT:access(plugin_conf)
   end
   -- Set the new JWT to an HTTP Header (potentially overwrite the existing header)
   kong.service.request.set_header(plugin_conf.custom_jwt_header, crafted_x_custom_jwt)
-  kong.log.notice("JWT successfully crafted and added to '" .. 
+  kong.log.debug("JWT successfully crafted and added to '" .. 
                   plugin_conf.custom_jwt_header .. "' header: " .. 
                   crafted_x_custom_jwt)
 

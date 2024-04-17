@@ -95,8 +95,8 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
 3) Install [http.ie](https://httpie.io/)
 4) Prepare the RSA JWK for getting the Public and Private Keypair
 - You can use the JWK keypair provided in this repo:
-  - JWKS (JSON Web Key Set) Public Key: `./test-keys/RS256-jwks-public.json`
-  - JWK Private Key: `./test-keys/RS256-jwk-private.json`
+  - JWKS Public Keys (JSON Web Key Set) Public Key: [RS256-jwks-public.json](./test-keys/RS256-jwks-public.json)
+  - JWK Private Key: [RS256-jwk-private.json](./test-keys/RS256-jwk-private.json)
 - **Or** create your own JWK keypair: go for instance to the site https://mkjwk.org/ and configure the online tool with following values:
   - key Size: `2048`
   - Key Use: `Signature`
@@ -111,7 +111,7 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
 - Add the `Request Termination` plugin to the Route with:
   - `config.status_code`=`200`
   - `config.content_type`=`application/json`
-  - `config.body`=copy/paste the content of `./test-keys/RS256-jwks-public.json` **Or**
+  - `config.body`=copy/paste the content of [RS256-jwks-public.json](./test-keys/RS256-jwks-public.json) **Or**
   - `Config.Body`=**The `Public JWK Key` must be pasted from https://mkjwk.org/ and add `"keys": [` property for having a JWKS**. If needed, adapt the `kid` to a custom value. JWKS Structure:
     ```json
     {
@@ -139,7 +139,7 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
   - config.bearer_clientid_claim=`clientId` or `** Replace with the right claim for having the proper Kong consumer reconciliation **`
   - config.iss=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt)
   - config.jku=`<adapt the URL to your environment>` (example: https://kong-gateway:8443/x-custom-jwt/jwks)
-  - config.private_jwk=copy/paste the content of `./test-keys/RS256-jwk-private.json` **Or**
+  - config.private_jwk=copy/paste the content of [RS256-jwk-private.json](./test-keys/RS256-jwk-private.json) **Or**
   - config.private_jwk=paste the `Public and Private Keypair` from https://mkjwk.org/. If needed, adapt the `kid` to a custom value; the `kid` value must be the same as defined in `Prerequisites` heading (see the configuration of `Request Termination` plugin)
   - config.verbose=`true`
 7) Create a Consumer with:
