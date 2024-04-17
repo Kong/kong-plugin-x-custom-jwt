@@ -93,7 +93,7 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
 1) Install the [Kong Gateway](https://docs.konghq.com/gateway/latest/install/)
 2) Install the `x-custom-jwt` plugin by following the documentation, [here](https://docs.konghq.com/gateway/latest/plugin-development/file-structure/)
 3) Install [http.ie](https://httpie.io/)
-4) Prepare the RSA JWK for getting the Public and Private Keypair
+4) Prepare the RSA256 JWK for getting the Public and Private Keypair
 - You can use the JWK keypair provided in this repo:
   - JWKS Public Keys (JSON Web Key Set) Public Key: [RS256-jwks-public.json](./test-keys/RS256-jwks-public.json)
   - JWK Private Key: [RS256-jwk-private.json](./test-keys/RS256-jwk-private.json)
