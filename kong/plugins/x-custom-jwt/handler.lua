@@ -29,6 +29,7 @@ local function jwtCrafterSigner(data, plugin_conf)
   local json  = require("cjson")
   local errFunc = {}
   local verboseMsg
+  local algorithm
   local signingKey
   local pk
   local err
@@ -36,18 +37,6 @@ local function jwtCrafterSigner(data, plugin_conf)
   local privateJwkJson
   local jwt_token
   
-  --local jws        = require "kong.openid-connect.jws"
-  --local signed_token
-  --kong.log.notice("** jerome jws.encode")
-  --signed_token, err = jws.encode({
-  --        payload = data,
-  --        jwk     = plugin_conf.private_jwk,
-  --      })
-  --if not signed_token then
-  --  verboseMsg = "invalid_token " .. err
-  --end
-  --kong.log.notice("** Jerome: signed_token: " .. signed_token)
-
   -- Convert Private Key to JSON
   ok, privateJwkJson = pcall(json.decode, plugin_conf.private_jwk)
   -- If there is an error during the JWT signature
@@ -58,7 +47,8 @@ local function jwtCrafterSigner(data, plugin_conf)
 
   -- Convert the private JWK key to a PEM format
   if not err then
-    if privateJwkJson.alg == 'RS256' or privateJwkJson.alg == 'RS512' or privateJwkJson.alg == 'ES256' then
+    algorithm = privateJwkJson.alg
+    if privateJwkJson.alg == 'RS256' or privateJwkJson.alg == 'RS512' then
       pk, err = pkey.new(plugin_conf.private_jwk, {formats = "JWK", type = "*"})
       if err then
         verboseMsg = "Unable to load the JWK, error: '" .. err .. "'"
