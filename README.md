@@ -163,11 +163,11 @@ In this repo, there is the [decK configuration](./decK/konnect.yaml) related to 
 4) Test
 - `Request`:
   ```shell
-  http -a contact@konghq.com:<**YOUR_PASSWORD**> :8000/oidc
+  http -a contact@konghq.com:<**YOUR_PASSWORD**> kong-gateway:8000/oidc
   ```
   or
   ```shell
-  http :8000/oidc Authorization:'Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxOEVFR3YweE9FQkt3eFNJYVZDNGpHTWxVcF8yWURhS1pfMVdZNHV3b2lRIn0.eyJleHAiOjE3MTI2ODU3MTYsImlhdCI6MTcxMjY4NTQxNiwianRpIjoiYWI2MmQwNjUtNDYyNy00NDllLTk4ZDAtNTA0MGYwYjI4OTNhIiwiaXNzIjoiaHR0cHM6Ly9zc28uYXBpbS5ldTo4NDQzL2F1dGgvcmVhbG1zL0plcm9tZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJjYzE2M2ZmNS1iZmMxLTRkNmYtYTFjMS02YjAzZTI5NWY2MmYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJjb250YWN0QGtvbmdocS5jb20iLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1qZXJvbWUiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImNsaWVudElkIjoiY29udGFjdEBrb25naHEuY29tIiwiY2xpZW50SG9zdCI6Ijg4LjE3NS45LjE0NiIsInByZWZlcnJlZF91c2VybmFtZSI6InNlcnZpY2UtYWNjb3VudC1jb250YWN0QGtvbmdocS5jb20iLCJjbGllbnRBZGRyZXNzIjoiODguMTc1LjkuMTQ2In0.AE3wHHhElQWnuDCJO_XYSvBw7RND4ZB8FpgB9wKlSR5Zbr3XyFwTrbtOdC5A6DAkMdcZ5s-sWg1qDVefM6k2qVe-gj2kmFcMBBt8DQPD7YBKbHdJGaPxqCDrNOrmhMt6MC7EldHd0rJ4beF7i49q4eCyYuSLCpKeS-eTFw5L-s98uGoRxgEZEocaZl9Atu_ajB84HQBpQ31Z0ObKwrMME7TU4nyOWXFYs7ZcGlhamjC2dmDiVJkxKL3ochq6jbnfQAkwjq6EVrK_0KPdMOANcwoYi0gg2TqDq0b16CSA8zUYYf0qVxV69Dyl_3tcWnqvHs7kzelQMeNMziOl4_GZMg'
+  http kong-gateway:8000/oidc Authorization:'Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJxOEVFR3YweE9FQkt3eFNJYVZDNGpHTWxVcF8yWURhS1pfMVdZNHV3b2lRIn0.eyJleHAiOjE3MTI2ODU3MTYsImlhdCI6MTcxMjY4NTQxNiwianRpIjoiYWI2MmQwNjUtNDYyNy00NDllLTk4ZDAtNTA0MGYwYjI4OTNhIiwiaXNzIjoiaHR0cHM6Ly9zc28uYXBpbS5ldTo4NDQzL2F1dGgvcmVhbG1zL0plcm9tZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJjYzE2M2ZmNS1iZmMxLTRkNmYtYTFjMS02YjAzZTI5NWY2MmYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJjb250YWN0QGtvbmdocS5jb20iLCJhY3IiOiIxIiwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbIm9mZmxpbmVfYWNjZXNzIiwiZGVmYXVsdC1yb2xlcy1qZXJvbWUiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIGVtYWlsIHByb2ZpbGUiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImNsaWVudElkIjoiY29udGFjdEBrb25naHEuY29tIiwiY2xpZW50SG9zdCI6Ijg4LjE3NS45LjE0NiIsInByZWZlcnJlZF91c2VybmFtZSI6InNlcnZpY2UtYWNjb3VudC1jb250YWN0QGtvbmdocS5jb20iLCJjbGllbnRBZGRyZXNzIjoiODguMTc1LjkuMTQ2In0.AE3wHHhElQWnuDCJO_XYSvBw7RND4ZB8FpgB9wKlSR5Zbr3XyFwTrbtOdC5A6DAkMdcZ5s-sWg1qDVefM6k2qVe-gj2kmFcMBBt8DQPD7YBKbHdJGaPxqCDrNOrmhMt6MC7EldHd0rJ4beF7i49q4eCyYuSLCpKeS-eTFw5L-s98uGoRxgEZEocaZl9Atu_ajB84HQBpQ31Z0ObKwrMME7TU4nyOWXFYs7ZcGlhamjC2dmDiVJkxKL3ochq6jbnfQAkwjq6EVrK_0KPdMOANcwoYi0gg2TqDq0b16CSA8zUYYf0qVxV69Dyl_3tcWnqvHs7kzelQMeNMziOl4_GZMg'
   ```
 - `Response`: expected value of `x-custom-jwt` plugin:
     * Base64 encoded:
@@ -237,7 +237,7 @@ In this repo, there is the [decK configuration](./decK/konnect.yaml) related to 
 - `Request`:
 
   ```shell
-  http -a 'my-user:My p@ssword!' :8000/basicAuth
+  http -a 'my-user:My p@ssword!' kong-gateway:8000/basicAuth
   ```
 - `Response`: expected value of `x-custom-jwt` plugin:
     * Base64 encoded:
@@ -328,7 +328,7 @@ In this repo, there is the [decK configuration](./decK/konnect.yaml) related to 
 - `Request`:
 
   ```shell
-  http :8000/apiKey apikey:'012345AZERTY!'
+  http kong-gateway:8000/apiKey apikey:'012345AZERTY!'
   ```
 - `Response`: expected value of `x-custom-jwt` plugin:
 
@@ -357,6 +357,99 @@ In this repo, there is the [decK configuration](./decK/konnect.yaml) related to 
         "client_id": "012345AZERTY!"
       },
       "signature": "xxxxx"
+    }
+    ```
+
+## Check the JWS with the JWT plugin and build the `/introspect` Route
+Use the [JWT plugin](https://docs.konghq.com/hub/kong-inc/jwt/) to check the JWS. The JWT plugin loads the credentials from the Consumer entity depending of algorithm:
+  - For RSA (RS256, RS512): the Consumer credential uses the PEM format (derived from the Public JWK)
+  - For HMAC (SH256, SH512): the Consuemr credential uses the Symetric Key (see `k` value in the JWK)
+
+Let's create an `/introspect` Route with the [JWT plugin](https://docs.konghq.com/hub/kong-inc/jwt/) and Request-Termination Plugin:
+1) Get the Credential
+- For RSA:
+  - Get the content of [RS256-public.pem](./test-keys/RS256-public.pem) **or**
+  - Build a PEM file from JWK public key by using the [convert-RSA-JWK-to-PEM.js](test-keys/convert-RSA-JWK-to-PEM.js)  node.js tool:
+  ```
+  node convert-RSA-JWK-to-PEM.js RS256-jwk-public.json
+  ```
+  - Put the content in a `.pem` file by including `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----`
+- For HMAC:
+  - Get the `k` content of [SH256-jwk-symetric-key.json](./test-keys/SH256-jwk-symetric-key.json)
+
+2) Attach the JWT credential to the Consumer
+- For Kong EE: use Kong Manager:
+  - Open the `contact@konghq.com` consumer, click on Credentials / Key Authentication and click on `+ New JWT Credential`, put:
+    - For RSA (RS256):
+      - algorithm=`RS256`
+      - key=`my-user`
+      - rsa_public_key=copy/paste the PEM content from step #1 ([RS256-public.pem](./test-keys/RS256-public.pem))
+      - click on Save
+    - For HMAC (SH256):
+      - algorithm=`SH256`
+      - key=`my-user`
+      - secret=copy/paste the `k` content of [SH256-jwk-symetric-key.json](./test-keys/SH256-jwk-symetric-key.json)
+      - click on Save
+- For Konnect: use API:
+  - For RSA (RS256):
+    ```sh
+    http https://us.api.konghq.com/konnect-api/api/runtime_groups/<**YOUR_RUNTIME_GROUP_ID**>/consumers/<**ID_OF_CONTACT@KONGHQ.COM_CONSUMER_ID**>/jwt Authorization:'Bearer kpat_<**YOUR_PAT**>' algorithm=RS256 key=my-user rsa_public_key=@RS256-public.pem
+    ```
+  - For HMAC (SH256):
+    ```sh
+    http https://us.api.konghq.com/konnect-api/api/runtime_groups/<**YOUR_RUNTIME_GROUP_ID**>/consumers/<**ID_OF_CONTACT@KONGHQ.COM_CONSUMER_ID**>/jwt Authorization:'Bearer kpat_<**YOUR_PAT**>' algorithm=HS256 key=my-user secret="<**SECRET_FROM_STEP_ABOVE**>"
+    ```
+
+3) Create the `/introspect` Route
+- Create a new a Route (with **no Gateway Service**)
+  - name=`Introspect`
+  - path=`/introspect`
+  - click on Save
+- Add the `JWT` plugin to the Route with:
+  - config.claims_to_verify=`exp`
+  - config.key_claim_name=`client_id`
+  - click on Save
+- Add the `Request Termination` plugin to the Route with:
+  - config.status_code=`200`
+  - config.body=`{"message": "Ok"}`
+  - config.content_type=`application/json`
+
+4) Get a new `x-custom-jwt` with the Basic Authorization
+- `Request`:
+  ```shell
+  http -a 'my-user:My p@ssword!' kong-gateway:8000/basicAuth
+  ```
+- `Response`: copy/paste the `x-custom-jwt` value
+  * Base64 encoded:
+    ```
+    eyJ0eXAiOiJKV1QiLCJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIiwia2lkIjoia29uZyIsImFsZyI6IlJTMjU2In0.eyJjbGllbnRfaWQiOiJteS11c2VyIiwiaXNzIjoiaHR0cHM6Ly9rb25nLWdhdGV3YXk6ODQ0My94LWN1c3RvbS1qd3QiLCJhdWQiOiJodHRwOi8vaHR0cGJpbi5hcGltLmV1L2FueXRoaW5nIiwiaWF0IjoxNzEzMzc0MTU2LCJqdGkiOiIwYjFjNTdmNy01NjBlLTRjYmYtODAzMi1lMTdlMGU4MjIzYWYiLCJleHAiOjE3MTMzNzU5NTYsImFjdCI6eyJjbGllbnRfaWQiOiJjb250YWN0QGtvbmdocS5jb20tSUQxIn19.UoaBk5PPl2GkwKOGClD0k7bfjpvp_7e9-n4oNhRZHyv-Om1w2qriTN-ehCBlOIrECY4drFgsU3NE0EGelmhwmRcKz3K9u79fL0R1IgfZ2sI_sEh2SVau7lquWFFV-B-WWe1uY53CVBOF1XJBmUCEHxDLBr1zCVA-izXq7Xfr9-ls3Hb1j2B09GdhXSXroxIniu4pcWZHN4GP-nl5rmxo1eASvs5JJo7HD3G4ivczEy_ujtEtVUGQ23zBLdEzUxr9p91gjTeao9l7uQwhCjSuLEXcfHuU8A2OcgIS1r3rbpRSoyCEcSCg7al2FjsGeaGUzvXGe4xssTOGBwSVXtxApw
+    ```
+5) Check the `x-custom-jwt` with `/introspect` route
+- `Request`:
+  ```shell
+  http kong-gateway:8000/introspect Authorization:'Bearer eyJ0eXAiOiJKV1QiLCJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIiwia2lkIjoia29uZyIsImFsZyI6IlJTMjU2In0.eyJjbGllbnRfaWQiOiJteS11c2VyIiwiaXNzIjoiaHR0cHM6Ly9rb25nLWdhdGV3YXk6ODQ0My94LWN1c3RvbS1qd3QiLCJhdWQiOiJodHRwOi8vaHR0cGJpbi5hcGltLmV1L2FueXRoaW5nIiwiaWF0IjoxNzEzMzc0MTU2LCJqdGkiOiIwYjFjNTdmNy01NjBlLTRjYmYtODAzMi1lMTdlMGU4MjIzYWYiLCJleHAiOjE3MTMzNzU5NTYsImFjdCI6eyJjbGllbnRfaWQiOiJjb250YWN0QGtvbmdocS5jb20tSUQxIn19.UoaBk5PPl2GkwKOGClD0k7bfjpvp_7e9-n4oNhRZHyv-Om1w2qriTN-ehCBlOIrECY4drFgsU3NE0EGelmhwmRcKz3K9u79fL0R1IgfZ2sI_sEh2SVau7lquWFFV-B-WWe1uY53CVBOF1XJBmUCEHxDLBr1zCVA-izXq7Xfr9-ls3Hb1j2B09GdhXSXroxIniu4pcWZHN4GP-nl5rmxo1eASvs5JJo7HD3G4ivczEy_ujtEtVUGQ23zBLdEzUxr9p91gjTeao9l7uQwhCjSuLEXcfHuU8A2OcgIS1r3rbpRSoyCEcSCg7al2FjsGeaGUzvXGe4xssTOGBwSVXtxApw'
+  ```
+- `Response`:
+  - The `x-custom-jwt` JWT is valid:
+    ```json
+    "HTTP/1.1 200 OK"
+    
+    {
+      "message": "Ok"
+    }
+    ```
+  - The JWT has expired:
+    ```json
+    "HTTP/1.1 401 Unauthorized"
+    {
+      "exp": "token expired"
+    }
+    ```
+  - The JWT has no corresponding `client_id`:
+    ```json
+    "HTTP/1.1 401 Unauthorized"
+    {
+      "message": "No credentials found for given 'client_id'"
     }
     ```
 
