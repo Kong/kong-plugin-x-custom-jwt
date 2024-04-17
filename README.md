@@ -89,6 +89,7 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
 ```
 ## How to test the `x-custom-jwt` plugin with Kong Gateway
 ### Prerequisites 
+**In this repo, there is the [decK configuration](./decK/konnect.yaml) related to the prerequisites and following examples**
 
 1) Install the [Kong Gateway](https://docs.konghq.com/gateway/latest/install/)
 2) Install the `x-custom-jwt` plugin by following the documentation, [here](https://docs.konghq.com/gateway/latest/plugin-development/file-structure/)
@@ -146,8 +147,6 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
 - Username=`contact@konghq.com`
 - Custom Id=`contact@konghq.com-ID1`
 8) Create a `contact@konghq.com` Client in your IdP Server for Example #1
-
-In this repo, there is the [decK configuration](./decK/konnect.yaml) related to the prerequisites and following examples
 
 ### Example #1: "Authorization: Bearer" input
 1) Open the `httpbin` Service
