@@ -363,7 +363,7 @@ In this repo, there is the [decK configuration](./decK/konnect.yaml) related to 
 ## Check the JWS with the JWT plugin and build the `/introspect` Route
 Use the [JWT plugin](https://docs.konghq.com/hub/kong-inc/jwt/) to check the JWS. The JWT plugin loads the credentials from the Consumer entity depending of algorithm:
   - For RSA (RS256, RS512): the Consumer credential uses the PEM format (derived from the Public JWK)
-  - For HMAC (SH256, SH512): the Consuemr credential uses the Symetric Key (see `k` value in the JWK)
+  - For HMAC (SH256, SH512): the Consumer credential uses the Symetric Key (see `k` value in the JWK)
 
 Let's create an `/introspect` Route with the [JWT plugin](https://docs.konghq.com/hub/kong-inc/jwt/) and Request-Termination Plugin:
 1) Get the Credential
