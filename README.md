@@ -365,7 +365,7 @@ Use the [JWT plugin](https://docs.konghq.com/hub/kong-inc/jwt/) to check the JWS
   - For RSA (RS256, RS512): the Consumer credential uses the PEM format (derived from the Public JWK)
   - For HMAC (SH256, SH512): the Consumer credential uses the Symetric Key (see `k` value in the JWK)
 
-Let's create an `/introspect` Route with the [JWT plugin](https://docs.konghq.com/hub/kong-inc/jwt/) and Request-Termination Plugin:
+Let's create an `/introspect` Route with the [JWT plugin](https://docs.konghq.com/hub/kong-inc/jwt/) and [Request Termination Plugin](https://docs.konghq.com/hub/kong-inc/request-termination/):
 1) Get the Credential
 - For RSA:
   - Get the content of [RS256-public.pem](./test-keys/RS256-public.pem) **or**
