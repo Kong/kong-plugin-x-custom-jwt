@@ -445,7 +445,7 @@ Let's create an `/introspect` Route with the [JWT](https://docs.konghq.com/hub/k
       "exp": "token expired"
     }
     ```
-  - The JWT has no corresponding `client_id`:
+  - The JWT does not have a common `client_id` value in the Consumer JWT credentials and in `x-custom-jwt`:
     ```json
     "HTTP/1.1 401 Unauthorized"
     {
