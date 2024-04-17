@@ -379,7 +379,7 @@ Let's create an `/introspect` Route with the [JWT](https://docs.konghq.com/hub/k
 
 2) Attach the JWT credential to the Consumer
 - For Kong EE: use Kong Manager:
-  - Open the `contact@konghq.com` consumer, click on Credentials / Key Authentication and click on `+ New JWT Credential`, put:
+  - Open the `contact@konghq.com` consumer, click on Credentials / JWT and click on `+ New JWT Credential`, put:
     - For RSA (RS256):
       - algorithm=`RS256`
       - key=`my-user`
@@ -430,7 +430,7 @@ Let's create an `/introspect` Route with the [JWT](https://docs.konghq.com/hub/k
   http kong-gateway:8000/introspect Authorization:'Bearer eyJ0eXAiOiJKV1QiLCJqa3UiOiJodHRwczovL2tvbmctZ2F0ZXdheTo4NDQzL3gtY3VzdG9tLWp3dC9qd2tzIiwia2lkIjoia29uZyIsImFsZyI6IlJTMjU2In0.eyJjbGllbnRfaWQiOiJteS11c2VyIiwiaXNzIjoiaHR0cHM6Ly9rb25nLWdhdGV3YXk6ODQ0My94LWN1c3RvbS1qd3QiLCJhdWQiOiJodHRwOi8vaHR0cGJpbi5hcGltLmV1L2FueXRoaW5nIiwiaWF0IjoxNzEzMzc0MTU2LCJqdGkiOiIwYjFjNTdmNy01NjBlLTRjYmYtODAzMi1lMTdlMGU4MjIzYWYiLCJleHAiOjE3MTMzNzU5NTYsImFjdCI6eyJjbGllbnRfaWQiOiJjb250YWN0QGtvbmdocS5jb20tSUQxIn19.UoaBk5PPl2GkwKOGClD0k7bfjpvp_7e9-n4oNhRZHyv-Om1w2qriTN-ehCBlOIrECY4drFgsU3NE0EGelmhwmRcKz3K9u79fL0R1IgfZ2sI_sEh2SVau7lquWFFV-B-WWe1uY53CVBOF1XJBmUCEHxDLBr1zCVA-izXq7Xfr9-ls3Hb1j2B09GdhXSXroxIniu4pcWZHN4GP-nl5rmxo1eASvs5JJo7HD3G4ivczEy_ujtEtVUGQ23zBLdEzUxr9p91gjTeao9l7uQwhCjSuLEXcfHuU8A2OcgIS1r3rbpRSoyCEcSCg7al2FjsGeaGUzvXGe4xssTOGBwSVXtxApw'
   ```
 - `Response`:
-  - The `x-custom-jwt` JWT is valid:
+  - The JWT is valid:
     ```json
     "HTTP/1.1 200 OK"
     
