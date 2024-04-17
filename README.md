@@ -101,7 +101,7 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
   - key Size: `2048`
   - Key Use: `Signature`
   - Algorithm: `RS256`
-  - Key-ID: `SHA-256`
+  - Key-ID (kid): `kong`
 - Click on Generate, copy to clipboard the `Public and Private Keypair` (i.e. Private Key) and the `Public Key`
 5) Create a Route to deliver the public JWKS
 - The Route has the following properties:
