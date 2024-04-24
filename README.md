@@ -16,7 +16,8 @@ The plugin `x-custom-jwt` doesn't check the validity of the input itself (neithe
 |:------------------------------|:----------------|:-----------------------------------------------------------|
 |config.apikey_header|apikey|The Http header name to get the `apiKey` for Key Authentication|
 |config.bearer_clientid_claim|clientId|The claim name to extract the `clientId` (from a JWT) for Authentication Bearer|
-|config.custom_jwt_header|X-Custom-Jwt|The Http header name where to drop the custom JWT. It overrides any existing value. If the value is `Authorization` the `Bearer` type is added in the value|
+|config.upstream_custom_jwt_header|X-Custom-Jwt|The Http header name where to drop the custom JWT in the upstream request. It overrides any existing value. If the value is `Authorization` the `Bearer` type is added in the value|
+|config.downstream_custom_jwt_header|N/A|The Http header name where to drop the custom JWT in the downstream response|
 |config.expires_in|1800|Number of seconds for the `exp` (expiration) claim which are added to the current time|
 |config.iss|https://kong-gateway:8443/x-custom-jwt|The `iss` (issuer) claim that identifies the Kong Gateway that issued the custom JWT|
 |config.jku|https://kong-gateway:8443/x-custom-jwt/jwks|The `jku` (JWK set Url) that points to a Kong Gateway route for delivering the well-known location of JWKs|
@@ -85,11 +86,11 @@ x-custom-jwt.payload.act.client_id = "<kong-consumer-custom-id>" or "<kong-consu
 jws_x_custom_jwt = jwt:sign (x-custom-jwt, private_jwk)
 
 -- Add the custom JWT in an HTTP header to the request's headers before sending the request to the Backend API
-kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
+kong.service.request.set_header(plugin_conf.upstream_custom_jwt_header, jws_x_custom_jwt)
 ```
 ## How to test the `x-custom-jwt` plugin with Kong Gateway
 ### Prerequisites 
-**In this repo, there is the [decK configuration](./decK/konnect.yaml) related to the prerequisites and following examples**
+**In this repo, there is the [decK configuration](./decK/konnect.yaml) related to the prerequisites and following examples.** Take care about the password of `my-user` Basic Auth which is not imported by decK.
 
 1) Install the [Kong Gateway](https://docs.konghq.com/gateway/latest/install/)
 2) Install the `x-custom-jwt` plugin by following the documentation, [here](https://docs.konghq.com/gateway/latest/plugin-development/file-structure/)
@@ -238,6 +239,7 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
   ```shell
   http -a 'my-user:My p@ssword!' kong-gateway:8000/basicAuth
   ```
+  **If you imported the configuration with decK you'll have a 401 error.** It's due to hashing of passwords, so you have to redefine it: see step #4
 - `Response`: expected value of `x-custom-jwt` plugin:
     * Base64 encoded:
     ```
