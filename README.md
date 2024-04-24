@@ -118,7 +118,7 @@ kong.service.request.set_header(plugin_conf.custom_jwt_header, jws_x_custom_jwt)
     {
       "keys": [
         {
-          *****  CHANGE ME WITH THE PUBLIC JWKS *****
+          *****  CHANGE ME WITH THE PUBLIC JWK *****
         }
       ]
     }
