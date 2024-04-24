@@ -5,20 +5,6 @@ local xCustomJWT = {
 
 local genericErrMsg = "You are not authorized to access to this service"
 
-local function dump(o)
-  if type(o) == 'table' then
-     local s = '{ '
-     for k,v in pairs(o) do
-        if type(k) ~= 'number' then k = '"'..k..'"' end
-        s = s .. '['..k..'] = ' .. dump(v) .. ','
-     end
-     return s .. '} '
-  else
-     return tostring(o)
-  end
-end
-
-
 ---------------------------------------------------------------------------------------------------
 -- Craft the JWT 'x-custom-jwt' and Sign it having a JWS
 ---------------------------------------------------------------------------------------------------

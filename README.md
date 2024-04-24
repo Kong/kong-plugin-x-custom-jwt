@@ -439,6 +439,13 @@ Let's create an `/introspect` Route with the [JWT](https://docs.konghq.com/hub/k
       "message": "Ok"
     }
     ```
+  - The JWT has an Invalid signature:
+    ```json
+    "HTTP/1.1 401 Unauthorized"
+    {
+      "message": "Invalid signature"
+    }
+    ```
   - The JWT has expired:
     ```json
     "HTTP/1.1 401 Unauthorized"
